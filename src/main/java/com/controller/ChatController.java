@@ -15,7 +15,7 @@ public class ChatController {
     @Qualifier("ChatServiceImpl")
     private ChatService chatService;
 
-    @RequestMapping("/newChat")
+    @RequestMapping("/newchat")
     public String newChat(Chat chat){
         System.out.println(chat);
         chatService.newChat(chat);
