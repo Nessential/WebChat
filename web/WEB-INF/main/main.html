@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>WebChat</title>
+	<link href="styles/main.css" rel="stylesheet">
+</head>
+<body>
+	<script>
+		
+		// 获取文本实际长度
+		String.prototype.pxWidth = function(font) {
+		  // re-use canvas object for better performance
+		  var canvas = String.prototype.pxWidth.canvas || (String.prototype.pxWidth.canvas = document.createElement("canvas")),
+			  context = canvas.getContext("2d"); 
+
+		  font && (context.font = font);
+		  var metrics = context.measureText(this);
+
+		  return metrics.width;
+		}
+		
+		
+		function showChatUnit(nickname="Miku", value="みくみくみ", avatar="default.jpg", isMyself=false){
+			
+			var myself=(isMyself==true?"Self":"")
+			
+			var chatInner=document.createElement('div');
+			chatInner.classList.add("chatInner");
+			
+			var chatUnit=document.createElement('div');
+			chatUnit.classList.add('chatUnit');
+			
+			var chatAvatar=document.createElement('div');
+			chatAvatar.classList.add('chatAvatar'+myself);
+			
+			var chatAvatarImg=document.createElement('img');
+			chatAvatarImg.classList.add('chatAvatarImg'+myself);
+			chatAvatarImg.setAttribute("src", "source/images/avatars/"+avatar);
+			
+			var chatName=document.createElement('div');
+			chatName.classList.add('chatName'+myself);
+			
+			var chatNameText=document.createElement('div');
+			chatNameText.classList.add('chatNameText'+myself);
+			chatNameText.innerHTML=nickname;
+			
+			var chatValueSpace=document.createElement('div');
+			chatValueSpace.classList.add('chatValueSpace'+myself);
+			
+			var chatValue=document.createElement('div');
+			chatValue.classList.add('chatValue'+myself);
+			
+			var valueWidth=value.pxWidth + 30;
+			
+			chatValue.style.width=(valueWidth>283? 283: valueWidth)+"px";
+			
+			var chatValueText=document.createElement('div');
+			chatValueText.classList.add('chatValueText'+myself);
+			chatValueText.innerHTML=value;
+			
+			document.getElementById("window").appendChild(chatInner);
+			
+			chatInner.appendChild(chatUnit);
+			chatUnit.appendChild(chatAvatar);
+			chatUnit.appendChild(chatName);
+			chatUnit.appendChild(chatValueSpace);
+			
+			chatAvatar.appendChild(chatAvatarImg);
+			chatName.appendChild(chatNameText);
+			chatValueSpace.appendChild(chatValue);
+			chatValue.appendChild(chatValueText);
+		}
+		
+	</script>
+	<div class="chatWindow" id="window">
+		<script>
+			showChatUnit("風又音理", "...探して。", "default.jpg");
+			showChatUnit("風又音理", "心臓の中で、探して！", "default.jpg");
+			showChatUnit("風又音理", "探して！", "default.jpg");
+			showChatUnit("ノワール", ".......楽しい旅をします。", "noir.jpg", true);
+			showChatUnit("ノワール", "あなたと一緒に、旅を。", "noir.jpg", true);
+		</script>
+	</div>
+</body>
+</html>
