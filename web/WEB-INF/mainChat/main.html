@@ -42,7 +42,7 @@
 			chatName.classList.add('chatName'+myself);
 			
 			var chatNameText=document.createElement('div');
-			chatNameText.classList.add('chatNameText'+myself);
+			chatNameText.classList.add('chatNameText');
 			chatNameText.innerHTML=nickname;
 			
 			var chatValueSpace=document.createElement('div');
@@ -56,7 +56,7 @@
 			chatValue.style.width=(valueWidth>283? 283: valueWidth)+"px";
 			
 			var chatValueText=document.createElement('div');
-			chatValueText.classList.add('chatValueText'+myself);
+			chatValueText.classList.add('chatValueText');
 			chatValueText.innerHTML=value;
 			
 			document.getElementById("window").appendChild(chatInner);
