@@ -3,18 +3,18 @@ use `building`;
 DROP TABLE IF EXISTS `user`;
 create table `user`
 (
-    `uid`      int(10),
+    `uid`      int(10) AUTO_INCREMENT,
     `username` varchar(30),
     `password` varchar(30),
     `picture`  varchar(30),
-    KEY `uid ` (`uid`)
+    KEY `uid` (`uid`)
 );
 insert into `user` (`uid`,`username`,`password`,`picture`)values
     (1,"admin","123456","/pic/admin.png"),
     (2,"friend","123456","/pic/friend.png");
 
 create unique index user_id_uindex
-    on `user` (`id`);
+    on `user` (`uid`);
 
 create unique index user_username_uindex
     on `user` (`username`);

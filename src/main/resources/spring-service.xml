@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 1扫描service下的包下相关的bean -->
+
+    <context:component-scan base-package="com.service" />
+
+    <!--BookServiceImpl注入到IOC容器中-->
+
+    <bean id="BookServiceImpl" class="com.service.UserServiceImpl">
+        <!--        调用BookServiceImpl中的方法名setbookMapper中创建对象-->
+        <property name="userMapper" ref="UserMapper"/>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <bean id="UserMapper" class=""/>
+
+</beans>

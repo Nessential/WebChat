@@ -4,7 +4,7 @@ public class Chat {
     String name;
     String value;
     int time;
-
+//聊天
     @Override
     public String toString() {
         return "Chat{" +

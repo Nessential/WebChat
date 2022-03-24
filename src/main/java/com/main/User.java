@@ -3,14 +3,14 @@ package com.main;
 public class User {
     int id;
     String username;
-    String userpsw;
+    String password;
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + userpsw + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 
@@ -31,10 +31,10 @@ public class User {
     }
 
     public String getPassword() {
-        return userpsw;
+        return password;
     }
 
     public void setPassword(String userpsw) {
-        this.userpsw = userpsw;
+        this.password = userpsw;
     }
 }
