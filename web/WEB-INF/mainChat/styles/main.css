@@ -1,6 +1,6 @@
 html{
 	background-color: #E0FFFF;
-	font-family: '楷体';
+	font-family: '华文细黑';
 }
 
 body{
@@ -31,11 +31,12 @@ body{
 	float: left;
 }
 
-.chatAvatarImg{
-	margin-left: 10px;
+.chatAvatarImg, .chatAvatarImgSelf{
+	border-radius: 50px;
 	width: 50px;
 	height:50px;
-	border-radius: 50px;
+	
+	margin: 0 0 0 10px;
 }
 
 .chatName{
@@ -46,6 +47,7 @@ body{
 	color: #666;
 	margin:0;
 	font-size: 12px;
+	font-family: '微软雅黑';
 }
 
 .chatValue, .chatValueSelf{
@@ -61,9 +63,9 @@ body{
 }
 
 .chatValueText{
-	font-size: 22px;
-	margin: 2px 15px;
-	color: #FF6FF6;
+	font-size: 18px;
+	margin: 3px 15px 2px;
+	color: #000;
 	padding: 0;
 }
 
@@ -74,25 +76,13 @@ body{
 }
 
 .chatAvatarImgSelf{
-	margin-right: 10px;
-	width: 50px;
-	height:50px;
-	border-radius: 50px;
+	margin: 0 10px 0 0;
 }
 
 .chatNameSelf{
 	margin: 0 25px 5px 0;
 }
 
-.chatNameTextSelf{
-	color: #666;
-	margin:0;
-	font-size: 12px;
-}
-
-.chatValueTextSelf{
-	font-size: 22px;
-	margin: 2px 15px;
-	color: #39c5bb;
-	padding: 0;
+.chatValueSelf{
+	background-color: rgb(0, 255, 0);
 }
