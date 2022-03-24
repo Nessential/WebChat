@@ -8,6 +8,8 @@
     select  * from building.user  where username=#{username}
 
 </select>
+
+
 <select id="getUserpsw" parameterType="String">
     select  * from building.user where password=#{password}
 </select>

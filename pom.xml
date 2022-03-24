@@ -13,7 +13,10 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
+
     <dependencies>
+
+
         <!--Junit-->
         <dependency>
             <groupId>junit</groupId>
@@ -73,6 +76,14 @@
             <artifactId>spring-jdbc</artifactId>
             <version>5.3.16</version>
         </dependency>
+
+        <!--    lombok 用于生成实体类的构造函数-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+        </dependency>
+
     </dependencies>
     <build>
         <resources>

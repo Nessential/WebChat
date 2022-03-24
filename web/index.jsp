@@ -5,6 +5,7 @@
   Time: 8:40
   To change this template use File | Settings | File Templates.
 --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -14,7 +15,7 @@
 </head>
 
 <body>
-<form action="请求路径" method="post" id="myform">
+<form action="${pageContext.request.contextPath}/login" method="post" id="myform">
   <input type="text" id="username" name="username"/>
   <input type="password" id="password" name="password"/>
   <input type="submit" value="提交" id="login" />

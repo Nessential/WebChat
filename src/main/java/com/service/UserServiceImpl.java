@@ -9,10 +9,17 @@ public class UserServiceImpl implements UserService{
     this.usermapper = usermapper;
     }
 
+
     @Override
-    public User findUser(int uid) {
-           return usermapper.getUsername(uid);
+    public User getUsername(String username) {
+        return usermapper.getUsername(username);
     }
 
+
+
+    @Override
+    public User getUserpsw(String password) {
+        return usermapper.getUserpwd(password);
+    }
 
 }
