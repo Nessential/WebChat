@@ -14,10 +14,13 @@
     <!--BookServiceImpl注入到IOC容器中-->
 
     <bean id="BookServiceImpl" class="com.service.UserServiceImpl">
-        <!--        调用BookServiceImpl中的方法名setbookMapper中创建对象-->
-        <property name="userMapper" ref="UserMapper"/>
+        <!--调用BookServiceImpl中的方法名setbookMapper中创建对象-->
+        <property name="userMapper" ref="userMapper"/>
     </bean>
-
+    <bean id="ChatServiceImpl" class="com.service.ChatServiceImpl">
+        <!--调用BookServiceImpl中的方法名setbookMapper中创建对象-->
+        <property name="chatMapper" ref="chatMapper"/>
+    </bean>
     <!-- 配置事务管理器 -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <!-- 注入数据库连接池 -->

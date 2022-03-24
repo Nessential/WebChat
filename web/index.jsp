@@ -19,7 +19,13 @@
   <input type="password" id="password" name="password"/>
   <input type="submit" value="提交" id="login" />
 </form>
-
+<br>
+<form action="/chat/newchat" method="get" id="form">
+  <input type="text" name="username"/>
+  <input type="text" name="value"/>
+  <input type="text" name="time">
+  <input type="submit" value="提交" />
+</form>
 </body>
 
 </html>
