@@ -30,12 +30,12 @@ insert into `chat`(`name`,`value`,`time`)values
     ("friend","testtest",1616547048);
 create table `online`
 (
-    uid  int not null,
-    name varchar(30)
+    `uid`  int not null,
+    `name` varchar(30)
     );
 
 create unique index online_uid_uindex
-    on `online` (uid);
+    on `online` (`uid`);
 
 
 
