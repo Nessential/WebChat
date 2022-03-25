@@ -4,15 +4,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mapper.UserMapper">
 
-<select id="getUsername" parameterType="String" >
+<!--<select id="getUsername" resultType="User" >
     select  * from building.user  where username=#{username}
 
 </select>
 
 
-<select id="getUserpsw" parameterType="String">
+<select id="getUserpsw" resultType="User">
     select  * from building.user where password=#{password}
-</select>
+</select>-->
+
+
+
+
+    <select id="userlogin" resultType="User">
+        select * from user  where username=#{username} and password=#{password}
+    </select>
+
 </mapper>
 
 

@@ -2,6 +2,7 @@ package com.service;
 import com.main.User;
 import com.mapper.UserMapper;
 public class UserServiceImpl implements UserService{
+
     private UserMapper usermapper;
 
 
@@ -10,16 +11,13 @@ public class UserServiceImpl implements UserService{
     }
 
 
+
     @Override
-    public User getUsername(String username) {
-        return usermapper.getUsername(username);
+    public User userlogin(User user) {
+        return usermapper.userlogin(user);
     }
 
 
 
-    @Override
-    public User getUserpsw(String password) {
-        return usermapper.getUserpwd(password);
-    }
 
 }

@@ -15,14 +15,14 @@
 </head>
 
 <body>
-<form action="${pageContext.request.contextPath}/login" method="post" id="myform">
+<form action="/login/newlogin" method="post" id="myform">
   <input type="text" id="username" name="username"/>
   <input type="password" id="password" name="password"/>
   <input type="submit" value="提交" id="login" />
 </form>
 <br>
-<form action="${pageContext.request.contextPath}/chat/newchat" method="get" id="form">
-  <input type="text" name="name"/>
+<form action="/chat/newchat" method="get" id="form">
+  <input type="text" name="username"/>
   <input type="text" name="value"/>
   <input type="text" name="time">
   <input type="submit" value="提交" />

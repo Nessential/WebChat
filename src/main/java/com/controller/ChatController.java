@@ -22,7 +22,7 @@ public class ChatController {
     public String newChat(Chat chat){
         System.out.println(chat);
         chatService.newChat(chat);
-        return "新对话插入成功";
+        return "你妈的";
     }
 
     @RequestMapping("/getchat")
