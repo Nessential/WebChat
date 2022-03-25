@@ -9,79 +9,95 @@
 
 
 	<script>
-		// 获取文本实际长度
-		String.prototype.pxWidth = function(font) {
-		  // re-use canvas object for better performance
-		  var canvas = String.prototype.pxWidth.canvas || (String.prototype.pxWidth.canvas = document.createElement("canvas")),
-			  context = canvas.getContext("2d"); 
-
-		  font && (context.font = font);
-		  var metrics = context.measureText(this);
-
-		  return metrics.width;
-		}
+		<!-------------------------------------自定义内容------------------------------------->
 		
-		// 重绘value尺寸
-		function redrawValue(name, isFull){
-			per=(isFull==true? 1 : 0.6);
-				for (i=0;i<name.length;i++){
-					if (name[i])
-						name[i].style.width=htmlWidth*per-80 + "px";
-				}
-		}
+		// 隐藏侧边菜单的最大宽度
+		const fullWidth=600;
 		
-		// 重绘group显示状态、chat、input尺寸
-		function redrawMenu(isHide){
-			
-			if (isHide){
-				display="none";
-				per=1;
-				margin=0;
-			}
-			else {
-				display="block";
-				per=0.6;
-				margin="20%";
-			}
-			
-			document.getElementsByClassName("group")[0].style.display=display;
-			document.getElementsByClassName("info")[0].style.display=display;
-
-			document.getElementsByClassName("chat")[0].style.width=htmlWidth*per+"px";
-			document.getElementsByClassName("chat")[0].style.marginLeft=margin;
-			
-			document.getElementsByClassName("input")[0].style.width=htmlWidth*per+"px";
-			document.getElementsByClassName("input")[0].style.left=margin;
-		}
+		// 中央主菜单宽度占比
+		const mainWidthPer=60;
 		
-		// 重绘绝大部分控件
-		function redrawHTML(){
-			
-			htmlWidth = document.documentElement.clientWidth;
-			htmlHeight = document.documentElement.clientHeight;
-			
-			if (htmlWidth>600){
+		
+		<!-------------------------------------预运算内容------------------------------------->
+		
+		// 侧边菜单宽度占比
+		const sideWidthPer=(100-mainWidthPer)/2;
+		
+		
+		<!-------------------------------------外部函数------------------------------------->
+		
+		  // 计算文本在页面所占px宽度 -- 扩展String原型方法pxWidth
+		  String.prototype.pxWidth = function(font) {
+			const canvas =
+			  String.prototype.pxWidth.canvas ||
+			  (String.prototype.pxWidth.canvas = document.createElement('canvas'))
+			const context = canvas.getContext('2d')
+			font && (context.font = font)
+			const metrics = context.measureText(this)
+			return metrics.width
+		  }
+		
+		<!-------------------------------------类声明------------------------------------->
+		
+		// 生成控件信息
+		class childInfo{
+			constructor(name, widthPer){
+				this.widthPer=widthPer/100;
+				this.fullWidthPer=1;
+				this.width=htmlWidth*this.widthPer;
+				this.fullWidth=htmlWidth;
 				
-				// 重绘ChatValueSpace(Self)尺寸
-				redrawValue(document.getElementsByClassName("chatValueSpace"), false);
-				redrawValue(document.getElementsByClassName("chatValueSpaceSelf"), false);
-				
-				redrawMenu(isHide=false);
-			}
-			
-			else {
-				redrawValue(document.getElementsByClassName("chatValueSpace"), true);
-				redrawValue(document.getElementsByClassName("chatValueSpaceSelf"), true);
-				
-				redrawMenu(isHide=true);
+				this.element=document.getElementsByClassName(name)[0];
 			}
 		}
 		
+		class childFunctions{
+			new(){
+				
+				// 生成控件信息
+				this.group=new childInfo("group", sideWidthPer);
+				this.info=new childInfo("info", sideWidthPer);
+				this.chat=new childInfo("chat", mainWidthPer);
+				this.input=new childInfo("input", mainWidthPer);
+				this.window=new childInfo("chatWindow", mainWidthPer);
+			}
+		}
+		
+		
+		<!-------------------------------------控制台相关函数声明------------------------------------->
+			
+		// 清屏
+		function commandCls(){
+
+			let chatWindow=document.getElementsByClassName("chatWindow")[0];
+
+			let chatDel=chatWindow.childNodes;
+			for(i=chatDel.length-1;i>=0;i--)
+				chatWindow.removeChild(chatDel[i]);
+
+		}
+
+
+
+		// 显示帮助信息
+		function commandHelp(name="風又音理", avatar="default.jpg", from=false){
+
+			showChatUnit(name, "Console commands list:", avatar, from);
+
+			showChatUnit(name, "help 显示本帮助信息。", avatar, from);
+			showChatUnit(name, "cls 清屏。", avatar, from);
+			showChatUnit(name, "timestamp 打印一条时间戳。", avatar, from);
+			showChatUnit(name, "speak 打印一段对话。", avatar, from);
+			showChatUnit(name, "查询具体语法请用 /? ,如 !$:speak /?", avatar, from);
+
+		}
+			
+		
+		
+		<!-------------------------------------对话函数声明------------------------------------->
+		
+		// 生成对话单元
 		function showChatUnit(nickname="Miku", value="みくみくみ", avatar="default.jpg", isMyself=false){
-
-			htmlWidth = document.documentElement.clientWidth;
-			htmlHeight = document.documentElement.clientHeight;
-			
 			
 			var myself=(isMyself==true?"Self":"")
 			
@@ -111,15 +127,11 @@
 			var chatValue=document.createElement('div');
 			chatValue.classList.add('chatValue'+myself);
 			
-			var valueWidth=value.pxWidth + 30;
-			
-			chatValue.style.width=(valueWidth>283? 283: valueWidth)+"px";
-			
 			var chatValueText=document.createElement('div');
 			chatValueText.classList.add('chatValueText');
 			chatValueText.innerHTML=value;
 			
-			document.getElementById("window").appendChild(chatInner);
+			child.window.element.appendChild(chatInner);
 			
 			chatInner.appendChild(chatUnit);
 			chatUnit.appendChild(chatAvatar);
@@ -133,12 +145,230 @@
 			
 		}
 		
-		window.addEventListener("resize", redrawHTML);
+		// 获取浏览器尺寸
+		function readSizeHTML(){
+			htmlWidth = document.documentElement.clientWidth;
+			htmlHeight = document.documentElement.clientHeight;
+			
+			// 判断是否隐藏侧边菜单
+			isFull=(htmlWidth<fullWidth? true:false);
+		}
+		
+		// 重绘value尺寸
+		function redrawValueSpace(name){
+			per=(isFull? 1 : child.chat.widthPer);
+				for (i=0;i<name.length;i++){
+					if (name[i])
+						name[i].style.width=htmlWidth*per-80 + "px";
+				}
+		}
+		
+		// 重绘group、info、chat、input尺寸
+		function redrawMenu(){
+			
+			if (isFull){
+				display="none";
+				per=1;
+				margin=0;
+			}
+			else {
+				display="block";
+				per=mainWidthPer/100;
+				margin=(100-mainWidthPer)/2+"%";
+			}
+			
+			child.group.element.style.display=display;
+			child.group.element.style.width=child.group.widthPer*100+"%";
+				
+			child.info.element.style.display=display;
+			child.info.element.style.width=child.info.widthPer*100+"%";
+
+			child.chat.element.style.width=htmlWidth*per+"px";
+			child.chat.element.style.marginLeft=margin;
+			
+			child.input.element.style.width=htmlWidth*per+"px";
+			child.input.element.style.left=margin;
+		}
+		
+		// 重绘时间戳位置
+		function redrawTimeValue(){
+			for(i=0;i<timeValue.length;i++)
+				(t=timeValue[i].style).marginLeft=((isFull? child.chat.fullWidth : child.chat.width)-Number(t.width.slice(0,-2)))/2 + "px";
+		}
+		
+		// 引导重绘控件
+		function redrawHTML(){
+			
+			//刷新浏览器尺寸
+			readSizeHTML();
+			
+			child.new();
+			
+			// 重绘value尺寸
+			redrawValueSpace(document.getElementsByClassName("chatValueSpace"));
+			redrawValueSpace(document.getElementsByClassName("chatValueSpaceSelf"));
+			
+			// 重绘时间戳位置
+			redrawTimeValue();
+			
+			// 重绘group、info、chat、input尺寸
+			redrawMenu();
+		}
+		
+		// 提交表单后触发生成对话
+		function chatPost(keyId=13, pass=false){
+			
+			// 当按下回车，或输入为空时返回。
+			if (typeof( (value=document.getElementsByClassName("inputValueText")[0]).value ) == "undefined")
+				return;
+			
+			if(keyId!=13 || !(value=document.getElementsByClassName("inputValueText")[0]).value || value.value=="\n"){
+				if( value.value=="\n" )
+					value.value="";
+				return;
+			}
+
+			if( ( valueCommand=value.value ).slice(0,3) != "!$:" || pass){
+				showChatUnit("ノワール", value.value, "noir.jpg", true);
+				value.value="";
+				redrawHTML();
+				window.scrollTo(0, htmlHeight); 
+			}
+			
+			else{
+				
+				let argv=valueCommand.slice(3).split(" ");
+				let command=argv[0];
+				let isHelp=(argv[1]=="/?"? true:false);
+				
+				let err=false;
+				
+				if( command=="cls" ) {
+					
+					//!$:cls
+					
+					if(isHelp)
+						showChatUnit("風又音理", "!$:cls", "default.jpg");
+					
+					else{
+						commandCls();
+					}
+				}
+				
+				else if( command=="timestamp" ) {
+					
+					//!$:timestamp
+					
+					if(isHelp)
+						showChatUnit("風又音理", "!$:timestamp", "default.jpg");
+					
+					let t=new Date();
+					showTimeUnit(t.getHours()+":"+t.getMinutes());
+				}
+				
+				else if( command=="speak" ) {
+					
+					//!$:speak ノワール ...suki noir.jpg
+					
+					if(isHelp){
+						showChatUnit("風又音理", "!$:speak [username] [value] [avatar] [*from]", "default.jpg");
+						
+						showChatUnit("風又音理", "[nickname]用户昵称，如 “ノワール”。", "default.jpg");
+						showChatUnit("風又音理", "[value]发言内容，如 “......探して。”。", "default.jpg");
+						showChatUnit("風又音理", "[avatar]用户头像(带后缀名)，如 “noir.jpg”。", "default.jpg");
+						showChatUnit("風又音理", "[*from]是否来自己方发送，“true”或“false(默认为false)。", "default.jpg");
+					}
+					
+					else {
+					
+						if (argv.length==4){
+							showChatUnit(argv[1], argv[2], argv[3]);
+						}
+						else if (argv.length==5){
+							showChatUnit(argv[1], argv[2], argv[3], (argv[4]=="true"? true:false) );
+						}
+						else
+							err=true;
+					}
+				}
+				
+				else if( command=="help" ) {
+					
+					//!$:help
+					
+					if(isHelp)
+						showChatUnit("風又音理", "!$:help", "default.jpg");
+					
+					else
+						commandHelp();
+					
+				}
+				
+				else{
+					err=true;
+				}
+				
+				if (err)
+					showChatUnit("風又音理", "命令语法不正确，请检查拼写。", "default.jpg");
+					
+				
+				valueCommand+="!$ENDLINE";
+				
+				value.value="";
+				redrawHTML();
+				
+				scrollTo(0, htmlWidth);
+				
+				return;
+			}
+		}
+		
+		<!-------------------------------------时间戳函数声明------------------------------------->
+		
+		// 生成时间戳单元
+		function showTimeUnit(value="08:31"){
+			
+			var timeInner=document.createElement('div');
+			timeInner.classList.add('timeInner');
+			
+			let timeValue=document.createElement('div');
+			timeValue.classList.add('timeValue');
+			
+			timeValue.style.width=value.pxWidth('normal 16px 微软雅黑')+18+"px";
+			
+			timeValue.style.marginLeft=(child.chat.width-timeValue.style.width)/2 + "px";
+			
+			var timeValueText=document.createElement('div');
+			timeValueText.classList.add('timeValueText');
+			timeValueText.innerHTML=value;
+			
+			child.window.element.appendChild(timeInner);
+			timeInner.appendChild(timeValue);
+			timeValue.appendChild(timeValueText);
+			
+			
+		}
+		
+		
 		
 	</script>
 	
+	<style type="text/css">
+		textarea{
+			border: none;
+			box-shadow:none;
+			outline: none;
+		}
+	</style>
+	
+	
 	<div class="input">
 		<div class="inputWindow">
+			<form class="inputForm">
+				<textarea rows="1" cols="60" onKeyDown="chatPost(event.keyCode)" class="inputValueText"></textarea>
+				<input type="button" class="inputShowValue" value="Show" onClick=InputShowValue()>
+				<input type="button" class="inputSubmit" value="Sent" onClick=chatPost()>
+			</form>
 		</div>
 	</div>
 	
@@ -154,11 +384,23 @@
 	
 	<div class="chat">
 		<div class="chatWindow" id="window">
+			
 			<script>
+				// 读取浏览器尺寸
+				readSizeHTML();
+
+				child=new childFunctions();
+				child.new();
+				
+				showTimeUnit("08:31");
+				
 				showChatUnit("風又音理", "...探して。", "default.jpg");
 				showChatUnit("風又音理", "心臓の中で、探して！", "default.jpg");
 				showChatUnit("風又音理", "探して！", "default.jpg");
-				showChatUnit("ノワール", ".......楽しい旅をします。", "noir.jpg", true);
+				
+				showTimeUnit("20:22");
+				
+				showChatUnit("ノワール", "......楽しい旅をします。", "noir.jpg", true);
 				showChatUnit("ノワール", "あなたと一緒に、旅を。", "noir.jpg", true);
 			</script>
 		</div>
@@ -170,7 +412,15 @@
 	</div>
 	
 	<script>
+		
+		// 更新控件信息
+		timeValue=document.getElementsByClassName("timeValue");
+		
+		// 重绘控件尺寸
 		redrawHTML();
+		
+		// 监听浏览器尺寸变化
+		window.addEventListener("resize", redrawHTML);
 	</script>
 </body>
 </html>
