@@ -42,4 +42,9 @@
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
         </mvc:message-converters>
     </mvc:annotation-driven>
+
+    <!-- 引入静态资源 -->
+    <mvc:default-servlet-handler />
+    <mvc:resources mapping="/styles/**" location="/WEB-INF/mainChat/styles/" />
+    <mvc:resources mapping="/source/**" location="/WEB-INF/mainChat/source/" />
 </beans>

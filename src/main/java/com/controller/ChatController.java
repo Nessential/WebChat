@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.main.Chat;
 import com.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
 
 @RestController
 @RequestMapping("/chat")
@@ -20,5 +23,11 @@ public class ChatController {
         System.out.println(chat);
         chatService.newChat(chat);
         return "新对话插入成功";
+    }
+
+    @RequestMapping("/getchat")
+    public String getChat(int n){
+        System.out.println(n);
+        return JSON.toJSONString(chatService.getChat(n));
     }
 }
