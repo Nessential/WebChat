@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class PageController {
     @RequestMapping("/mainchat")
     public String gotoMain(Model model){
-        return "/WEB-INF/mainChat/main.html";
+        return "/WEB-INF/mainChat/chat.html";
     }
 }
