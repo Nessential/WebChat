@@ -28,6 +28,11 @@ public class ChatServiceImpl implements ChatService{
     }
 
     @Override
+    public List<Chat> getChatByTime(int timestamp) {
+        return this.chatMapper.getChatByTime(timestamp);
+    }
+
+    @Override
     public int newChat(Chat chat) {
         return this.chatMapper.newChat(chat);
     }
