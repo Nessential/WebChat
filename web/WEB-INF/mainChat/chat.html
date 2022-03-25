@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>WebChat</title>
+	<link href="styles/chat.css" rel="stylesheet">
+</head>
+<body>
+	<script>
+		// 获取文本实际长度
+		String.prototype.pxWidth = function(font) {
+		  // re-use canvas object for better performance
+		  var canvas = String.prototype.pxWidth.canvas || (String.prototype.pxWidth.canvas = document.createElement("canvas")),
+			  context = canvas.getContext("2d"); 
+
+		  font && (context.font = font);
+		  var metrics = context.measureText(this);
+
+		  return metrics.width;
+		}
+		
+		// 重绘value尺寸
+		function redrawValue(name, isFull){
+			per=(isFull==true? 1 : 0.6);
+				for (i=0;i<name.length;i++){
+					if (name[i])
+						name[i].style.width=htmlWidth*per-80 + "px";
+				}
+		}
+		
+		// 重绘group显示状态、chat、input尺寸
+		function redrawMenu(isHide){
+			
+			if (isHide){
+				display="none";
+				per=1;
+				margin=0;
+			}
+			else {
+				display="block";
+				per=0.6;
+				margin="20%";
+			}
+			
+			document.getElementsByClassName("group")[0].style.display=display;
+			document.getElementsByClassName("info")[0].style.display=display;
+
+			document.getElementsByClassName("chat")[0].style.width=htmlWidth*per+"px";
+			document.getElementsByClassName("chat")[0].style.marginLeft=margin;
+			
+			document.getElementsByClassName("input")[0].style.width=htmlWidth*per+"px";
+			document.getElementsByClassName("input")[0].style.left=margin;
+		}
+		
+		// 重绘绝大部分控件
+		function redrawHTML(){
+			
+			htmlWidth = document.documentElement.clientWidth;
+			htmlHeight = document.documentElement.clientHeight;
+			
+			if (htmlWidth>600){
+				
+				// 重绘ChatValueSpace(Self)尺寸
+				redrawValue(document.getElementsByClassName("chatValueSpace"), false);
+				redrawValue(document.getElementsByClassName("chatValueSpaceSelf"), false);
+				
+				redrawMenu(isHide=false);
+			}
+			
+			else {
+				redrawValue(document.getElementsByClassName("chatValueSpace"), true);
+				redrawValue(document.getElementsByClassName("chatValueSpaceSelf"), true);
+				
+				redrawMenu(isHide=true);
+			}
+		}
+		
+		function showChatUnit(nickname="Miku", value="みくみくみ", avatar="default.jpg", isMyself=false){
+
+			htmlWidth = document.documentElement.clientWidth;
+			htmlHeight = document.documentElement.clientHeight;
+			
+			
+			var myself=(isMyself==true?"Self":"")
+			
+			var chatInner=document.createElement('div');
+			chatInner.classList.add("chatInner");
+			
+			var chatUnit=document.createElement('div');
+			chatUnit.classList.add('chatUnit');
+			
+			var chatAvatar=document.createElement('div');
+			chatAvatar.classList.add('chatAvatar'+myself);
+			
+			var chatAvatarImg=document.createElement('img');
+			chatAvatarImg.classList.add('chatAvatarImg'+myself);
+			chatAvatarImg.setAttribute("src", "source/images/avatars/"+avatar);
+			
+			var chatName=document.createElement('div');
+			chatName.classList.add('chatName'+myself);
+			
+			var chatNameText=document.createElement('div');
+			chatNameText.classList.add('chatNameText');
+			chatNameText.innerHTML=nickname;
+			
+			var chatValueSpace=document.createElement('div');
+			chatValueSpace.classList.add('chatValueSpace'+myself);
+			
+			var chatValue=document.createElement('div');
+			chatValue.classList.add('chatValue'+myself);
+			
+			var valueWidth=value.pxWidth + 30;
+			
+			chatValue.style.width=(valueWidth>283? 283: valueWidth)+"px";
+			
+			var chatValueText=document.createElement('div');
+			chatValueText.classList.add('chatValueText');
+			chatValueText.innerHTML=value;
+			
+			document.getElementById("window").appendChild(chatInner);
+			
+			chatInner.appendChild(chatUnit);
+			chatUnit.appendChild(chatAvatar);
+			chatUnit.appendChild(chatName);
+			chatUnit.appendChild(chatValueSpace);
+			
+			chatAvatar.appendChild(chatAvatarImg);
+			chatName.appendChild(chatNameText);
+			chatValueSpace.appendChild(chatValue);
+			chatValue.appendChild(chatValueText);
+			
+		}
+		
+		window.addEventListener("resize", redrawHTML);
+		
+	</script>
+	
+	<div class="input">
+		<div class="inputWindow">
+		</div>
+	</div>
+	
+	<div class="navi">
+		<div class="naviWindow">
+		</div>
+	</div>
+	
+	<div class="group">
+		<div class="groupWindow">
+		</div>
+	</div>
+	
+	<div class="chat">
+		<div class="chatWindow" id="window">
+			<script>
+				showChatUnit("風又音理", "...探して。", "default.jpg");
+				showChatUnit("風又音理", "心臓の中で、探して！", "default.jpg");
+				showChatUnit("風又音理", "探して！", "default.jpg");
+				showChatUnit("ノワール", ".......楽しい旅をします。", "noir.jpg", true);
+				showChatUnit("ノワール", "あなたと一緒に、旅を。", "noir.jpg", true);
+			</script>
+		</div>
+	</div>
+	
+	<div class="info">
+		<div class="infoWindow">
+		</div>
+	</div>
+	
+	<script>
+		redrawHTML();
+	</script>
+	
+</body>
+</html>
