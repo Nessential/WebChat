@@ -6,8 +6,13 @@
 
     <select id="getChat" resultType="Chat" >
         select * from chat
-        order by time DESC
+        order by time
         limit 0,#{n}
+    </select>
+
+    <select id="getChatByTime" resultType="Chat">
+        select * from chat
+        where time>#{timestamp}
     </select>
 
     <insert id="newChat" parameterType="Chat">

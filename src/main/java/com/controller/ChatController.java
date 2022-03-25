@@ -30,4 +30,8 @@ public class ChatController {
         System.out.println(n);
         return JSON.toJSONString(chatService.getChat(n));
     }
+    @RequestMapping("/getChatByTime")
+    public String getChatByTime(int timestamp){
+        return JSON.toJSONString(chatService.getChatByTime(timestamp));
+    }
 }
