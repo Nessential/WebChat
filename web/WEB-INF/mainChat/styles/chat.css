@@ -1,6 +1,9 @@
 html{
 	background-color: #E0FFFF;
 	font-family: '华文细黑';
+	width: 100%;
+	height: 100%;
+	float: left;
 }
 
 body{
@@ -8,20 +11,62 @@ body{
 	padding: 0;
 }
 
+.navi, .group, .chat, .info, .input{
+	float: left;
+}
+
+.navi, .group,  .info, .input{
+	position: fixed;
+}
+
+.navi{
+	width: 100%;
+	top: 0;
+}
+
+.naviWindow{
+	width: 100%;
+	height: 70px;
+	background-color: aquamarine;
+}
+
+.group{
+	height: 700px;
+	width: 20%;
+	top: 70px;
+	left: 0;
+}
+
+.groupWindow{
+	height: 100%;
+	width: 100%;
+	background-color: darkgray;
+}
+
+
+
+
+
+.chat{
+	margin: 70px 20% 0;
+	width: 60%;
+}
+
 .chatWindow{
 	/*background-image: url("../source/images/backgrounds/default.jpg");*/
 	background-color: #FFCCCC;
-	width: 433px;
+	width: 100%;
 	height: 700px;
 }
 
 .chatInner{
+	width: 100%;
 	float: left;
 	padding-top: 20px;
 }
 
 .chatUnit{
-	width: 433px;
+	width: 100%;
 	min-height: 60px;
 }
 
@@ -36,7 +81,7 @@ body{
 	width: 50px;
 	height:50px;
 	
-	margin: 0 0 0 10px;
+	margin: 0 0 0 20px;
 }
 
 .chatName{
@@ -59,7 +104,6 @@ body{
 
 .chatValueSpace, .chatValueSpaceSelf{
 	min-height: 33px;
-	width: 313px;
 }
 
 .chatValueText{
@@ -76,7 +120,7 @@ body{
 }
 
 .chatAvatarImgSelf{
-	margin: 0 10px 0 0;
+	margin: 0 20px 0 0;
 }
 
 .chatNameSelf{
@@ -85,4 +129,34 @@ body{
 
 .chatValueSelf{
 	background-color: rgb(0, 255, 0);
+}
+
+
+
+.info{
+	height: 700px;
+	width: 20%;
+	top: 70px;
+	right: 0;
+}
+
+.infoWindow{
+	height: 100%;
+	width: 100%;
+	background-color:thistle;
+}
+
+
+.input{
+	width: 60%;
+	height: 120px;
+	position: fixed;
+	bottom: 0;
+	left: 20%;
+}
+
+.inputWindow{
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
 }
