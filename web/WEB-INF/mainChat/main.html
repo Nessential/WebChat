@@ -12,99 +12,67 @@
 		String.prototype.pxWidth = function(font) {
 		  // re-use canvas object for better performance
 		  var canvas = String.prototype.pxWidth.canvas || (String.prototype.pxWidth.canvas = document.createElement("canvas")),
-			  context = canvas.getContext("2d"); 
+			  context = canvas.getContext("2d");
 
 		  font && (context.font = font);
 		  var metrics = context.measureText(this);
 
 		  return metrics.width;
 		}
-		
-		
+
+
 		function showChatUnit(nickname="Miku", value="みくみくみ", avatar="default.jpg", isMyself=false){
-			
+
 			var myself=(isMyself==true?"Self":"")
-			
+
 			var chatInner=document.createElement('div');
 			chatInner.classList.add("chatInner");
-			
+
 			var chatUnit=document.createElement('div');
 			chatUnit.classList.add('chatUnit');
-			
+
 			var chatAvatar=document.createElement('div');
 			chatAvatar.classList.add('chatAvatar'+myself);
-			
+
 			var chatAvatarImg=document.createElement('img');
 			chatAvatarImg.classList.add('chatAvatarImg'+myself);
 			chatAvatarImg.setAttribute("src", "source/images/avatars/"+avatar);
-			
+
 			var chatName=document.createElement('div');
 			chatName.classList.add('chatName'+myself);
-			
+
 			var chatNameText=document.createElement('div');
 			chatNameText.classList.add('chatNameText');
 			chatNameText.innerHTML=nickname;
-			
+
 			var chatValueSpace=document.createElement('div');
 			chatValueSpace.classList.add('chatValueSpace'+myself);
-			
+
 			var chatValue=document.createElement('div');
 			chatValue.classList.add('chatValue'+myself);
-			
+
 			var valueWidth=value.pxWidth + 30;
-			
+
 			chatValue.style.width=(valueWidth>283? 283: valueWidth)+"px";
-			
+
 			var chatValueText=document.createElement('div');
 			chatValueText.classList.add('chatValueText');
 			chatValueText.innerHTML=value;
-			
+
 			document.getElementById("window").appendChild(chatInner);
-			
+
 			chatInner.appendChild(chatUnit);
 			chatUnit.appendChild(chatAvatar);
 			chatUnit.appendChild(chatName);
 			chatUnit.appendChild(chatValueSpace);
-			
+
 			chatAvatar.appendChild(chatAvatarImg);
 			chatName.appendChild(chatNameText);
 			chatValueSpace.appendChild(chatValue);
 			chatValue.appendChild(chatValueText);
 		}
 
-		function loadXMLDoc()
-		{
-			var xmlhttp;
-			if (window.XMLHttpRequest)
-			{
-				// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-				xmlhttp=new XMLHttpRequest();
-			}
-			xmlhttp.onreadystatechange=function()
-			{
-				if (xmlhttp.readyState==4 && xmlhttp.status==200)
-				{
-					var myArr = JSON.parse(this.responseText);
-					loadChats(myArr)
-				}
-			}
-			xmlhttp.open("GET","/chat/getchat?n=20",true);
-			xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-			xmlhttp.send();
-		}
 
-		me="admin";
-		loadChats = function (arr) {
-			for(i = 0; i < arr.length; i++) {
-				showChatUnit(arr[i].name,arr[i].value,"default.jpg",arr[i].name===me)
-			}
-		}
-		document.onreadystatechange = function(){
-			if(document.readyState==="complete")
-			{
-				loadXMLDoc();
-			}
-		};
 
 	</script>
 
