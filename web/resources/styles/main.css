@@ -1,0 +1,88 @@
+html{
+	background-color: #E0FFFF;
+	font-family: '华文细黑';
+}
+
+body{
+	margin: 0;
+	padding: 0;
+}
+
+.chatWindow{
+	/*background-image: url("../source/images/backgrounds/default.jpg");*/
+	background-color: #FFCCCC;
+	width: 433px;
+	height: 700px;
+}
+
+.chatInner{
+	float: left;
+	padding-top: 20px;
+}
+
+.chatUnit{
+	width: 433px;
+	min-height: 60px;
+}
+
+
+/*对方消息样式*/
+.chatUnit, .chatAvatar, .chatValue, .chatName, .chatValueSpace{
+	float: left;
+}
+
+.chatAvatarImg, .chatAvatarImgSelf{
+	border-radius: 50px;
+	width: 50px;
+	height:50px;
+	
+	margin: 0 0 0 10px;
+}
+
+.chatName{
+	margin: 0 0 5px 25px;
+}
+
+.chatNameText{
+	color: #666;
+	margin:0;
+	font-size: 12px;
+	font-family: '微软雅黑';
+}
+
+.chatValue, .chatValueSelf{
+	background-color: rgba(255, 255, 255, 0.7);
+	min-height: 33px;
+	border-radius: 20px;
+	margin: 1px 15px 0;
+}
+
+.chatValueSpace, .chatValueSpaceSelf{
+	min-height: 33px;
+	width: 313px;
+}
+
+.chatValueText{
+	font-size: 18px;
+	margin: 3px 15px 2px;
+	color: #000;
+	padding: 0;
+}
+
+
+/*己方消息样式*/
+.chatUnitSelf, .chatAvatarSelf, .chatValueSelf, .chatNameSelf, .chatValueSpaceSelf{
+	float: right;
+}
+
+.chatAvatarImgSelf{
+	margin: 0 10px 0 0;
+}
+
+.chatNameSelf{
+	margin: 0 25px 5px 0;
+}
+
+.chatValueSelf{
+	background-color: rgb(0, 255, 0);
+}

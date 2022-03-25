@@ -24,7 +24,7 @@ public class ChatServiceImpl implements ChatService{
     private ChatMapper chatMapper;
     @Override
     public List<Chat> getChat(int n) {
-        return null;
+        return this.chatMapper.getChat(n);
     }
 
     @Override

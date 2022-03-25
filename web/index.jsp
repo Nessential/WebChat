@@ -27,6 +27,8 @@
   <input type="text" name="time">
   <input type="submit" value="提交" />
 </form>
+
+<a href="${pageContext.request.contextPath}/mainchat">goto main</a>
 </body>
 
 </html>
