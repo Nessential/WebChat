@@ -1,6 +1,9 @@
 package com.service;
 import com.main.User;
 import com.mapper.UserMapper;
+
+import java.util.List;
+
 public class UserServiceImpl implements UserService{
 
     private UserMapper usermapper;
@@ -11,10 +14,19 @@ public class UserServiceImpl implements UserService{
     }
 
 
+    @Override
+    public User userRegister(User user) {
+        return usermapper.userRegister(user);
+    }
 
     @Override
-    public User userlogin(User user) {
-        return usermapper.userlogin(user);
+    public List<User> getUser(String username) {
+        return usermapper.getUser(username);
+    }
+
+    @Override
+    public User userlogin(String username, String password) {
+        return usermapper.userlogin(username,password);
     }
 
 

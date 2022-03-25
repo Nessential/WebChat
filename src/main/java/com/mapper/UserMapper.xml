@@ -15,11 +15,18 @@
 </select>-->
 
 
-
-
+<select id="userRegister" resultType="User">
+    INSERT into user(username, password) values(#{username} ,#{password})
+</select>
+ <select id="getUser" resultType="User">
+     select *from user where username=#{username}
+ </select>
     <select id="userlogin" resultType="User">
         select * from user  where username=#{username} and password=#{password}
     </select>
+
+
+
 
 </mapper>
 

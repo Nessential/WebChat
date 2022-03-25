@@ -16,6 +16,7 @@
         <!--    将包下的名字叫userMapper的接口与配置文件绑定在一起绑定-->
         <mapper resource="com/mapper/UserMapper.xml"/>
 
+
         <mapper resource="com/mapper/ChatMapper.xml"/>
     </mappers>
 
