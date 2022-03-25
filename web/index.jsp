@@ -21,8 +21,8 @@
   <input type="submit" value="提交" id="login" />
 </form>
 <br>
-<form action="/chat/newchat" method="get" id="form">
-  <input type="text" name="username"/>
+<form action="${pageContext.request.contextPath}/chat/newchat" method="get" id="form">
+  <input type="text" name="name"/>
   <input type="text" name="value"/>
   <input type="text" name="time">
   <input type="submit" value="提交" />

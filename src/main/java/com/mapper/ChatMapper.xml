@@ -8,7 +8,7 @@
 
     </select>
 
-    <insert id="newChat" parameterType="int">
+    <insert id="newChat" parameterType="Chat">
         insert into building.chat(name, value, time)
         VALUE(#{name},#{value},#{time})
     </insert>
