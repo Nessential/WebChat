@@ -59,3 +59,15 @@ function getUpdate(){
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send();
 }
+function submitForm() {
+  // jquery 表单提交
+  $("#form").ajaxSubmit(function(result) {
+    // 对于表单提交成功后处理，result为表单正常提交后返回的内容
+    if (result.status === true) {
+      alert(result.msg);
+    }else{
+      alert(result.msg);
+    }
+  });
+  return false; // 必须返回false，否则表单会自己再做一次提交操作，并且页面跳转
+}
