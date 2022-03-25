@@ -45,4 +45,5 @@
     <mvc:default-servlet-handler />
     <mvc:resources mapping="/styles/**" location="/WEB-INF/mainChat/styles/" />
     <mvc:resources mapping="/source/**" location="/WEB-INF/mainChat/source/" />
+    <mvc:resources mapping="/js/**" location="/WEB-INF/mainChat/js/" />
 </beans>
