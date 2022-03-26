@@ -6,7 +6,6 @@
 	<link href="styles/chat.css" rel="stylesheet">
 </head>
 <body>
-<script src="js/for_ajax.js"></script>
 
 	<script>
 		// <!-------------------------------------自定义内容------------------------------------->
@@ -17,17 +16,38 @@
 		// 中央主菜单宽度占比
 		const mainWidthPer=60;
 		
+		// 调用控制台前、后缀
+		const commandPrefix="$->";
+		const commandSuffix="->$ENDLINE";
+		
+		// 默认时间格式
+		const timeTypeDefault="HH:MM";
+		
+		// 默认输入框为收起状态
+		isInputShow=false;
+		
+		// 输入框收起/展开高度
+		const inputHeightHidden=30;
+		const inputHeightShow=100;
+		
+		// 禁用标签
+		const inputBannedLabel=["form", "input", "textarea", "menus", "fieldset"];
 		
 		// <!-------------------------------------预运算内容------------------------------------->
 		
 		// 侧边菜单宽度占比
 		const sideWidthPer=(100-mainWidthPer)/2;
 		
+		chatHistory = new Array();
+		
+		inputHistory = [];
+		inputHistoryPointer = 0;
+		inputHistoryRead = 0;
 		
 		// <!-------------------------------------外部函数------------------------------------->
 		
-		  // 计算文本在页面所占px宽度 -- 扩展String原型方法pxWidth
-		  String.prototype.pxWidth = function(font) {
+		// 计算文本在页面所占px宽度 -- 扩展String原型方法pxWidth
+		String.prototype.pxWidth = function(font) {
 			const canvas =
 			  String.prototype.pxWidth.canvas ||
 			  (String.prototype.pxWidth.canvas = document.createElement('canvas'))
@@ -77,21 +97,96 @@
 
 		}
 
-
-
 		// 显示帮助信息
 		function commandHelp(name="風又音理", avatar="default.jpg", from=false){
 
-			showChatUnit(name, "Console commands list:", avatar, from);
-
-			showChatUnit(name, "help 显示本帮助信息。", avatar, from);
-			showChatUnit(name, "cls 清屏。", avatar, from);
-			showChatUnit(name, "timestamp 打印一条时间戳。", avatar, from);
-			showChatUnit(name, "speak 打印一段对话。", avatar, from);
-			showChatUnit(name, "查询具体语法请用 /? ,如 !$:speak /?", avatar, from);
+			showChatUnit(name, "Console commands list:<br>help 显示本帮助信息。<br>cls 清屏。<br>timestamp 打印一条时间戳。<br>speak 打印一段对话。<br>查询具体语法请用 /? ,如 !$:speak /?", avatar, from);
 
 		}
+		
+		// 跳转到页尾
+		function toEnd(){
+			let t=document.querySelectorAll(".chatInner");
+			if(t.length)
+				t[t.length-1].scrollIntoView();
+		}
+		
+		
+		// <!-------------------------------------时间戳函数声明------------------------------------->
+		
+		// 生成时间戳单元
+		function showTimeUnit(value="08:31"){
 			
+			// 判断是否为命令
+			if (value.slice(0,commandPrefix.length)==commandPrefix){
+				
+				// 当命令为now时，将时间格式赋值为默认状态
+				let args=( ( temp=value.slice( commandPrefix.length ) )=="now"? timeTypeDefault : temp);
+				
+				let argv=args.split(/:|-| /);
+				
+				// 正读取到args的位数
+				let readLength=0;
+				
+				let timeOutput="";
+				
+				// 若入参MM类参数大于1，则默认首次出现的为月份，之后的为分钟
+				let elementCount=0;
+				argv.forEach( element=>{
+					if("MMmm".indexOf(element)!=-1)
+						elementCount++;
+				})
+				
+				let isDate=(elementCount>1? true:false);
+				
+				// 逐条读取
+				for(i=0;i<argv.length;i++){
+					
+					readLength+=argv[i].length;
+					
+					// 照入参args分隔符格式输出分隔符
+					timeOutput+=timeCheck(argv[i], isDate)+( (temp=args[readLength++])==undefined? "" : temp );
+					
+					// 若当前入参为MM类，且isDate为true，则将isDate改为false，即之后的MM类入参被认为是分钟
+					isDate=( ( isDate && ( "MMmm".indexOf(argv[i]) == -1 ) ) ? true : false );
+				}
+				
+				if (timeOutput.indexOf("error")==-1)
+					showTimeUnit(timeOutput);
+				
+				else
+					console.log("Error at function showTimeUnit");
+				
+				return;
+			}
+				
+			
+			var timeInner=document.createElement('div');
+			timeInner.classList.add('timeInner');
+			
+			let timeValue=document.createElement('div');
+			timeValue.classList.add('timeValue');
+			
+			timeValue.style.width=value.pxWidth('normal 16px 华文细黑')+20+"px";
+			
+			timeValue.style.marginLeft=(child.chat.width-timeValue.style.width)/2 + "px";
+			
+			var timeValueText=document.createElement('div');
+			timeValueText.classList.add('timeValueText');
+			timeValueText.innerHTML=value;
+			
+			child.window.element.appendChild(timeInner);
+			timeInner.appendChild(timeValue);
+			timeValue.appendChild(timeValueText);
+			
+			chatHistory.push( (t=document.getElementsByClassName("timeInner"))[t.length-1]);
+		}
+		
+		// 重绘时间戳位置
+		function redrawTimeValue(){
+			for(i=0;i<timeValue.length;i++)
+				(t=timeValue[i].style).marginLeft=((isFull? child.chat.fullWidth : child.chat.width)-Number(t.width.slice(0,-2)))/2 + "px";
+		}
 		
 		
 		//<!-------------------------------------对话函数声明------------------------------------->
@@ -143,6 +238,7 @@
 			chatValueSpace.appendChild(chatValue);
 			chatValue.appendChild(chatValueText);
 			
+			chatHistory.push( (t=document.getElementsByClassName("chatInner"))[t.length-1]);
 		}
 		
 		// 获取浏览器尺寸
@@ -154,7 +250,7 @@
 			isFull=(htmlWidth<fullWidth? true:false);
 		}
 		
-		// 重绘value尺寸
+		// 重绘valueSpace尺寸
 		function redrawValueSpace(name){
 			per=(isFull? 1 : child.chat.widthPer);
 				for (i=0;i<name.length;i++){
@@ -171,6 +267,7 @@
 				per=1;
 				margin=0;
 			}
+			
 			else {
 				display="block";
 				per=mainWidthPer/100;
@@ -188,12 +285,28 @@
 			
 			child.input.element.style.width=htmlWidth*per+"px";
 			child.input.element.style.left=margin;
-		}
-		
-		// 重绘时间戳位置
-		function redrawTimeValue(){
-			for(i=0;i<timeValue.length;i++)
-				(t=timeValue[i].style).marginLeft=((isFull? child.chat.fullWidth : child.chat.width)-Number(t.width.slice(0,-2)))/2 + "px";
+			
+			
+			margin=(isInputShow? inputHeightShow:inputHeightHidden);
+			
+			// 调整chatHistory最后两个元素的marginBottom
+			if((t=chatHistory).length){
+				if(t.length>1)
+					t[t.length-2].style.marginBottom=0;
+				t[t.length-1].style.marginBottom=margin+20+"px";
+			}
+			
+			// 调整inputValueText及按钮
+			child.input.element.style.height=margin+"px";
+			
+			document.getElementsByClassName("inputForm")[0].style.height=margin+"px";
+			
+			(t=document.getElementsByClassName("inputShowValue")[0]).style.height=margin+"px";
+			t.value=(isInputShow? "Hide":"Show");
+			
+			document.getElementsByClassName("inputSubmit")[0].style.height=margin+"px";
+			
+			document.getElementsByClassName("inputValueText")[0].style.height=margin+"px";
 		}
 		
 		// 引导重绘控件
@@ -213,155 +326,279 @@
 			
 			// 重绘group、info、chat、input尺寸
 			redrawMenu();
+			
+			toEnd();
 		}
 		
 		// 提交表单后触发生成对话
-		function chatPost(keyId=13, pass=false, str=""){
-
+		function chatPost(event, pass=false, str=""){
+			
+			event=event||window.Event;
+			
+			value=document.getElementsByClassName("inputValueText")[0];
+			
+			// 当按下 ↑ 则读取上一条历史输入
+			if (event.keyCode==38){
+				event.preventDefault();
+				
+				value.value=( (t=inputHistory[ inputHistory.length-(inputHistoryRead=(++inputHistoryRead<=inputHistory.length? inputHistoryRead:inputHistory.length) ) ])==undefined? "":t );
+				
+				return;
+			}
+			
+			if (event.keyCode==40){
+				event.preventDefault();
+				
+				value.value=( (inputHistoryRead=(--inputHistoryRead<0? 0:inputHistoryRead)) >= 1 ? inputHistory[ inputHistory.length - inputHistoryRead]:"");
+				
+				return;
+			}
+			
+			
 			// 当按下回车，或输入为空时返回。
-			if (typeof( (value=document.getElementsByClassName("inputValueText")[0]).value ) == "undefined")
+			if (value.value == "undefined")
 				return;
 
 			if (str!==""){
 				showChatUnit("ノワール", str, "noir.jpg", true);
 				redrawHTML();
-				// window.scrollTo(0, htmlHeight);
+				
 				return;
 			}
 
-			if(keyId!=13 || !(value=document.getElementsByClassName("inputValueText")[0]).value || value.value=="\n"){
-				if( value.value=="\n" )
-				value.value="";
-				return;
-			}
 
-			if( ( valueCommand=value.value ).slice(0,3) != "!$:" || pass){
-				showChatUnit("ノワール", value.value, "noir.jpg", true);
-				value.value="";
-				redrawHTML();
-				window.scrollTo(0, htmlHeight);
-			}
-			
-			else{
+			// 输入回车
+			if (event.keyCode==13){
 				
-				let argv=valueCommand.slice(3).split(" ");
-				let command=argv[0];
-				let isHelp=(argv[1]=="/?"? true:false);
 				
-				let err=false;
+				let value=document.getElementsByClassName("inputValueText")[0];
+				let valueText=value.value;
 				
-				if( command=="cls" ) {
-					
-					//!$:cls
-					
-					if(isHelp)
-						showChatUnit("風又音理", "!$:cls", "default.jpg");
-					
-					else{
-						commandCls();
-					}
+				event.preventDefault();
+				
+				if ( !valueText || valueText == "\n" ){
+					value.value="";
+					return;
 				}
 				
-				else if( command=="timestamp" ) {
-					
-					//!$:timestamp
-					
-					if(isHelp)
-						showChatUnit("風又音理", "!$:timestamp", "default.jpg");
-					
-					let t=new Date();
-					showTimeUnit(t.getHours()+":"+t.getMinutes());
-				}
+				inputHistory.push(valueText);
+				inputHistoryRead=0;
 				
-				else if( command=="speak" ) {
-					
-					//!$:speak ノワール ...suki noir.jpg
-					
-					if(isHelp){
-						showChatUnit("風又音理", "!$:speak [username] [value] [avatar] [*from]", "default.jpg");
+				for (i=0;i<inputBannedLabel.length;i++){
+					if (valueText.indexOf("<"+inputBannedLabel[i])!=-1 || valueText.indexOf(inputBannedLabel[i]+">")!=-1 || valueText.indexOf("</"+inputBannedLabel[i]+">")!=-1 ){
+						showChatUnit("風又音理", "<div class='chatValueTextWarning'>你没有使用此命令的权限。</div>", "default.jpg");
+						value.value="";
 						
-						showChatUnit("風又音理", "[nickname]用户昵称，如 “ノワール”。", "default.jpg");
-						showChatUnit("風又音理", "[value]发言内容，如 “......探して。”。", "default.jpg");
-						showChatUnit("風又音理", "[avatar]用户头像(带后缀名)，如 “noir.jpg”。", "default.jpg");
-						showChatUnit("風又音理", "[*from]是否来自己方发送，“true”或“false(默认为false)。", "default.jpg");
-					}
-					
-					else {
-					
-						if (argv.length==4){
-							showChatUnit(argv[1], argv[2], argv[3]);
-						}
-						else if (argv.length==5){
-							showChatUnit(argv[1], argv[2], argv[3], (argv[4]=="true"? true:false) );
-						}
-						else
-							err=true;
+						redrawHTML();
+						return;
 					}
 				}
 				
-				else if( command=="help" ) {
-					
-					//!$:help
-					
-					if(isHelp)
-						showChatUnit("風又音理", "!$:help", "default.jpg");
-					
-					else
-						commandHelp();
-					
-				}
 				
+				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix || pass ){
+					showChatUnit("ノワール", value.value, "noir.jpg", true);
+					value.value="";
+					redrawHTML();
+				}
+
 				else{
-					err=true;
-				}
-				
-				if (err)
-					showChatUnit("風又音理", "命令语法不正确，请检查拼写。", "default.jpg");
+
 					
-				
-				valueCommand+="!$ENDLINE";
-				
-				value.value="";
-				redrawHTML();
-				
-				scrollTo(0, htmlWidth);
-				
-				return;
+					let argv=valueCommand.slice(3).split(" ");
+					let command=argv[0];
+					let isHelp=(argv[1]=="/?"? true:false);
+
+					let err=false;
+
+					// 清屏
+					if(  command=="cls" ) {
+
+						//!$:cls
+
+						if(isHelp)
+							showChatUnit("風又音理", commandPrefix+"cls", "default.jpg");
+
+						else{
+							commandCls();
+						}
+					}
+
+					// 生成时间戳
+					else if ( command=="timestamp" ) {
+
+						//!$:timestamp [type="now"]
+
+						if (isHelp)
+							showChatUnit("風又音理", commandPrefix+"timestamp", "default.jpg");
+
+						let args=(argv[1]? argv[1] : "now")+(argv[2]? " "+argv[2] : "");
+						
+						showTimeUnit(commandPrefix+args);
+					}
+
+					// 生成对话单元
+					else if ( command=="speak" ) {
+
+						//!$:speak ノワール ...suki noir.jpg
+
+						if(isHelp){
+							showChatUnit("風又音理", commandPrefix+"speak [username] [value] [avatar] [*from]", "default.jpg");
+
+							showChatUnit("風又音理", "[nickname]用户昵称，如 “風又音理”。<br>[value]发言内容，如 “......探して。”。<br>[avatar]用户头像(带后缀名)，如 “default.jpg”。<br>[*from]是否来自己方发送，“true”或“false(默认为false)。", "default.jpg");
+						}
+
+						else {
+
+							if (argv.length==4){
+								showChatUnit(argv[1], argv[2], argv[3]);
+							}
+							else if (argv.length==5){
+								showChatUnit(argv[1], argv[2], argv[3], (argv[4]=="true"? true:false) );
+							}
+							else
+								err=true;
+						}
+					}
+
+					// 显示帮助信息
+					else if ( command=="help" ) {
+
+						//!$:help
+
+						if(isHelp)
+							showChatUnit("風又音理", commandPrefix+"help", "default.jpg");
+
+						else
+							commandHelp();
+
+					}
+
+					// 无此命令
+					else{
+						err=true;
+					}
+
+					if (err)
+						showChatUnit("風又音理", "命令语法不正确，请检查拼写。", "default.jpg");
+					
+					valueCommand+=commandSuffix;
+
+					value.value="";
+					redrawHTML();
+
+					return;
+				}
 			}
 		}
 		
-		// <!-------------------------------------时间戳函数声明------------------------------------->
-		
-		// 生成时间戳单元
-		function showTimeUnit(value="08:31"){
+		// 展开/收起输入框
+		function inputShowValue(){
+			isInputShow=(isInputShow? false:true);
 			
-			var timeInner=document.createElement('div');
-			timeInner.classList.add('timeInner');
-			
-			let timeValue=document.createElement('div');
-			timeValue.classList.add('timeValue');
-			
-			timeValue.style.width=value.pxWidth('normal 16px 微软雅黑')+18+"px";
-			
-			timeValue.style.marginLeft=(child.chat.width-timeValue.style.width)/2 + "px";
-			
-			var timeValueText=document.createElement('div');
-			timeValueText.classList.add('timeValueText');
-			timeValueText.innerHTML=value;
-			
-			child.window.element.appendChild(timeInner);
-			timeInner.appendChild(timeValue);
-			timeValue.appendChild(timeValueText);
-			
-			
+			redrawMenu();
+			toEnd();
 		}
 		
+		// 若输出字符串长度为1则向前填充0至两位
+		function toTwoBits(str){
+			return (str.length==1? "0"+str : str);
+		}
+		
+		// 处理时间格式参数
+		function timeCheck(argv, isDate=false){
+			
+			
+			let t=new Date();
+
+			let year=t.getFullYear();
+			let month=t.getMonth()+1;
+			let date=t.getDate();
+			let day=t.getDay();
+			let hour=t.getHours();
+			let minute=t.getMinutes();
+
+			let result="";
+			
+			switch(argv){
+					
+				case "YYYY":
+					result=year.toString();
+					break;
+					
+				case "yyyy":
+					result=year.toString();
+					break;
+					
+				case "YY":
+					result=year.toString().slice(2,4);
+					break;
+					
+				case "yy":
+					result=year.toString().slice(2,4);
+					break;
+					
+				case "DD":
+					result=toTwoBits(date.toString());
+					break;
+
+				case "dd":
+					result=toTwoBits(date.toString());
+					break;
+
+				case "D":
+					result=date.toString();
+					break;
+
+				case "d":
+					result=date.toString();
+					break;
+
+				// 24小时格式
+				case "HH":
+					result=toTwoBits(hour.toString());
+					break;
+
+				// 12小时格式
+				case "hh":
+					result=toTwoBits( (hour>12? hour-=12 : hour).toString() );
+					break;
+
+				case "H":
+					result=hours.toString();
+					break;
+
+				case "h":
+					result=(hour>12? hour-=12 : hour).toString()
+					break;
+
+				case "MM":
+					result=toTwoBits( ( isDate? month : minute ).toString() ) ;
+					break;
+
+				case "mm":
+					result=toTwoBits( ( isDate? month : minute ).toString() ) ;
+					break;
+
+				case "M":
+					result=( isDate? month : minute ).toString();
+					break;
+
+				case "m":
+					result=( isDate? month : (minute>12? minute-=12 : minute) ).toString()
+					break;
+
+				default:
+					result="error";
+			}
+			
+			return result;
+		}
 		
 		
 	</script>
 	
 	<style type="text/css">
-		textarea{
+		textarea, input{
 			border: none;
 			box-shadow:none;
 			outline: none;
@@ -372,8 +609,8 @@
 	<div class="input">
 		<div class="inputWindow">
 			<form class="inputForm">
-				<textarea rows="1" cols="60" onKeyDown="chatPost(event.keyCode)" class="inputValueText"></textarea>
-				<input type="button" class="inputShowValue" value="Show" onClick=InputShowValue()>
+				<textarea rows="1" cols="60" onKeyDown="chatPost(event)" class="inputValueText"></textarea>
+				<input type="button" class="inputShowValue" value="Show" onClick=inputShowValue()>
 				<input type="button" class="inputSubmit" value="Sent" onClick=chatPost()>
 			</form>
 		</div>
@@ -405,7 +642,7 @@
 				showChatUnit("風又音理", "心臓の中で、探して！", "default.jpg");
 				showChatUnit("風又音理", "探して！", "default.jpg");
 				
-				showTimeUnit("20:22");
+				showTimeUnit(commandPrefix+"now");
 				
 				showChatUnit("ノワール", "......楽しい旅をします。", "noir.jpg", true);
 				showChatUnit("ノワール", "あなたと一緒に、旅を。", "noir.jpg", true);
