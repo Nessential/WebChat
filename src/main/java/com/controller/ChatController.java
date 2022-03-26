@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 
 
 @RestController
@@ -21,6 +22,7 @@ public class ChatController {
     @RequestMapping("/newchat")
     public String newChat(Chat chat){
         System.out.println(chat);
+
         chatService.newChat(chat);
         return "你妈的";
     }
@@ -31,7 +33,7 @@ public class ChatController {
         return JSON.toJSONString(chatService.getChat(n));
     }
     @RequestMapping("/getChatByTime")
-    public String getChatByTime(int timestamp){
+    public String getChatByTime(long timestamp){
         return JSON.toJSONString(chatService.getChatByTime(timestamp));
     }
 }

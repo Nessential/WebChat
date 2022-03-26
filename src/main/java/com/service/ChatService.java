@@ -7,5 +7,5 @@ import java.util.List;
 public interface ChatService {
     List<Chat> getChat(int n);
     int newChat(Chat chat);
-    List<Chat> getChatByTime(int timestamp);
+    List<Chat> getChatByTime(long timestamp);
 }
