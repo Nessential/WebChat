@@ -6,7 +6,7 @@ create table `user`
     `uid`      int(10) AUTO_INCREMENT,
     `username` varchar(30),
     `password` varchar(30),
-    `picture`  varchar(30),
+    `picture`  text,
     KEY `uid` (`uid`)
 );
 insert into `user` (`uid`,`username`,`password`,`picture`)values

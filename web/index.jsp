@@ -55,6 +55,7 @@
 
 <a href="${pageContext.request.contextPath}/mainchat">goto main</a>
 <a href="/WEB-INF/register.jsp"> 注册</a>
+<a href="/register"> 迁移注册</a>
 </body>
 
 </html>
