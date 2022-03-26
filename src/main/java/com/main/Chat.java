@@ -3,7 +3,7 @@ package com.main;
 public class Chat {
     String name;
     String value;
-    int time;
+    long time;
 //聊天
     @Override
     public String toString() {
@@ -39,11 +39,11 @@ public class Chat {
         this.value = value;
     }
 
-    public int getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(int time) {
+    public void setTime(long time) {
         this.time = time;
     }
 }

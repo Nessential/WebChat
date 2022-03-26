@@ -23,7 +23,7 @@ create table `chat`
 (
     `name`  varchar(30),
     `value` varchar(200),
-    `time`  int
+    `time`  bigint
     );
 insert into `chat`(`name`,`value`,`time`)values
     ("admin","这是一条测试信息",1616547040),
