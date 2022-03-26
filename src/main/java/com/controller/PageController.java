@@ -10,4 +10,8 @@ public class PageController {
     public String gotoMain(Model model){
         return "/WEB-INF/mainChat/chat.html";
     }
+    @RequestMapping("/register")
+    public String register(Model model){
+        return "/WEB-INF/mainChat/register.html";
+    }
 }
