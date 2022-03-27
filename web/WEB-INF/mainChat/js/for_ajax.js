@@ -1,15 +1,9 @@
 function loadXMLDoc()
 {
   var xmlhttp;
-  if (window.XMLHttpRequest)
-  {
-    // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-    xmlhttp=new XMLHttpRequest();
-  }
-  xmlhttp.onreadystatechange=function()
-  {
-    if (xmlhttp.readyState==4 && xmlhttp.status==200)
-    {
+  xmlhttp=new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
       var myArr = JSON.parse(this.responseText);
       loadChats(myArr,true)
     }
@@ -19,34 +13,46 @@ function loadXMLDoc()
   xmlhttp.send();
 }
 
-let me="admin";
+let me=document.cookie;
 let newestTime =0;
-
+let temp_picture = null;
 loadChats = function (arr,old=false) {
   for(i = 0; i < arr.length; i++) {
     if (arr[i].name===me && old!==true){
       console.log("发送成功");
     }
     else{
-      showChatUnit(arr[i].name,arr[i].value,"default.jpg",arr[i].name===me);
+      getAvatarByName(arr[i].name);
+      showChatUnit(arr[i].name,arr[i].value,temp_picture,arr[i].name==me);
     }
 
     console.log("!");
     if (arr[i].time>newestTime){
       newestTime=arr[i].time;
-      showChatUnit("system",timestampToTime(newestTime),"default.jpg",true);
     }
   }
   redrawHTML();
   goToEnd()
 }
 
+function getAvatarByName(username){
+  var xmlhttp;
+  xmlhttp=new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState===4 && xmlhttp.status===200) {
+      var data = JSON.parse(this.responseText);
+      temp_picture = data.picture;
+    }
+  }
+  xmlhttp.open("GET","/get/inform?username="+username,false);
+  xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xmlhttp.send();
+}
+
 document.onreadystatechange = function(){
   if(document.readyState==="complete")
   {
     loadXMLDoc();
-    let t2 = window.setInterval("getUpdate();sendChatToServer('somebody','wwww');",3000);
-
   }
 };
 
