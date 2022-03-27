@@ -36,7 +36,7 @@ public class Userlogin {
         session.setAttribute("password",password);
 
 
-//hellohello?
+//hellohellohellohello?
         return "redirect:/mainchat";
     } else {
       return "/index.jsp";
