@@ -7,6 +7,12 @@
 	src: url('../fonts/文泉驿正黑.ttc');
 }
 
+input{
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+
 a{
     text-decoration: none;
 }

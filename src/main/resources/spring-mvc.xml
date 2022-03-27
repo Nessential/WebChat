@@ -47,5 +47,5 @@
     <mvc:resources mapping="/source/**" location="/WEB-INF/mainChat/source/" />
     <mvc:resources mapping="/js/**" location="/WEB-INF/mainChat/js/" />
     <mvc:resources mapping="/static/**" location="/WEB-INF/mainChat/static/" />
-    <mvc:resources mapping="/fonts/**" location="/WEB-INF/mainChat/fonts/" />
+    <mvc:resources mapping="/fonts/**" location="/WEB-INF/mainChat/styles/fonts/" />
 </beans>

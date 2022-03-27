@@ -20,7 +20,7 @@ public class GetImformation {
     @Autowired
     @Qualifier("UserServiceImpl")
     private UserService userService;
-    @RequestMapping("inform")
+    @RequestMapping("/inform")
     public String getUser(String username){
 
         return JSON.toJSONString(userService.getUser(username));

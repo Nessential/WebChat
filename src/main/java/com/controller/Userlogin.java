@@ -27,7 +27,7 @@ public class Userlogin {
   private UserService userService;
 
 
-  @RequestMapping(value = "/newlogin", method = RequestMethod.GET)
+  @RequestMapping(value = "/newlogin", method = RequestMethod.POST)
   public String login(String username, String password, HttpSession session, HttpServletResponse response,HttpServletRequest request) {
 
     User login = userService.userlogin(username, password);
@@ -37,7 +37,7 @@ public class Userlogin {
 
 
 
-        return "/WEB-INF/test.jsp";
+        return "redirect:/mainchat";
     } else {
       return "/index.jsp";
     }
