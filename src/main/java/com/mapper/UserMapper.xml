@@ -29,15 +29,17 @@
      select *from user where username=#{username}
  </select>
 
-<select id="register" resultType="User">
+<insert id="register" parameterType="User">
     INSERT INTO user(username, password,picture)  values (#{username},#{password},#{picture})
-</select>
+</insert>
 
     <select id="userlogin" resultType="User">
         select * from user  where username=#{username} and password=#{password}
     </select>
 
-
+<insert id="gettime" parameterType="User">
+    INSERT INTO online (username,overdue) values(#{username},#{time})
+</insert>
 
 
 </mapper>

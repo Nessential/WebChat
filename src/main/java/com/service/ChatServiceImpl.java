@@ -34,6 +34,7 @@ public class ChatServiceImpl implements ChatService{
 
     @Override
     public int newChat(Chat chat) {
+//      System.currentTimeMillis()  获取时间戳
         chat.setTime(System.currentTimeMillis());
         return this.chatMapper.newChat(chat);
     }

@@ -30,7 +30,7 @@ insert into `chat`(`name`,`value`,`time`)values
     ("friend","testtest",1616547048);
 create table `online`
 (
-    `uid`  int not null,
+    `uid`  int not null auto_increment,
     `name` varchar(30),
     `overdue` bigint
     );

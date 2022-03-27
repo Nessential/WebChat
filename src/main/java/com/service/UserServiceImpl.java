@@ -1,8 +1,11 @@
 package com.service;
+import com.main.Chat;
 import com.main.User;
 import com.mapper.UserMapper;
 
 import java.util.List;
+
+import static sun.awt.util.PerformanceLogger.setTime;
 
 public class UserServiceImpl implements UserService{
 
@@ -40,7 +43,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User register(String username, String password,String picture) {
+    public int register(String username, String password,String picture) {
+
         return usermapper.register(username,password,picture);
     }
 
@@ -55,7 +59,12 @@ public class UserServiceImpl implements UserService{
         return usermapper.userlogin(username,password);
     }
 
+    @Override
+    public long gettime(String username) {
+      long time = System.currentTimeMillis();
 
+            return usermapper.gettime(username,time+15*60*1000);
+    }
 
 
 }

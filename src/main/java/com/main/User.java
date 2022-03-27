@@ -12,6 +12,7 @@ public class User {
     String username;
     String password;
     String picture;
+    long time;
 
     @Override
     public String toString() {
@@ -20,6 +21,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", picture='" + picture + '\'' +
+                ", time=" + time +
                 '}';
     }
 }

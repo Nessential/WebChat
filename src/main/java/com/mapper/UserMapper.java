@@ -16,7 +16,8 @@ public User AddUsername(String username);
 public User AddPassword(String password);
 public User AddPicture(String picture);
 
-public User register(@Param("username") String username,@Param("password") String password,@Param("picture") String picture);
+public int register(@Param("username") String username,@Param("password") String password,@Param("picture") String picture);
 
 List<User> getUser(String username);
+public long gettime(@Param("username") String username,@Param("time") long time);
 }
