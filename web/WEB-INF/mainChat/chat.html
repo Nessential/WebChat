@@ -356,7 +356,7 @@
 		}
 		
 		// 提交表单后触发生成对话
-		function chatPost(event, isKeyDown, str=""){
+		function chatPost(event, isKeyDown, str="", isSent=false){
 			
 			event=event||window.Event;
 			
@@ -452,8 +452,8 @@
 			}
 
 
-			// 输入回车
-			if (event.keyCode==13){
+			// 输入回车或按下Sent
+			if (event.keyCode==13 || isSent){
 				
 				
 				let value=document.getElementsByClassName("inputValueText")[0];
@@ -482,6 +482,7 @@
 				
 				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix){
 					showChatUnit("ノワール", value.value, "noir.jpg", true);
+					sendChatToServer(me,value.value);
 					value.value="";
 					redrawHTML();
 				}
@@ -733,7 +734,7 @@
 			<form class="inputForm">
 				<textarea rows="1" cols="60" onKeyDown="chatPost(event, true)" onKeyUp="chatPost(event, false)" class="inputValueText"></textarea>
 				<input type="button" class="inputShowValue" value="Show" onClick="inputShowValue()">
-				<input type="button" class="inputSubmit" value="Sent" onClick="chatPost()">
+				<input type="button" class="inputSubmit" value="Sent" onClick=chatPost(event,0,"",true)>
 				<textarea rows="1" cols="60" class="inputValueTextHelp" readonly></textarea>
 			</form>
 		</div>
