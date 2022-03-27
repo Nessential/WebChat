@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
-@Controller
+@RestController
 
 @Scope(value="prototype")
 @RequestMapping("/get")

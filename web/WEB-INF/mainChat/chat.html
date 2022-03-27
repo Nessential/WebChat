@@ -6,7 +6,7 @@
 	<link href="styles/chat.css" rel="stylesheet">
 </head>
 <body>
-
+<script src="js/for_ajax.js"></script>
 	<script>
 		// <!-------------------------------------自定义内容------------------------------------->
 		
@@ -102,7 +102,9 @@
 		
 		
 		// <!-------------------------------------控制台相关函数声明------------------------------------->
-			
+		function commandSentInfo(){
+
+		}
 		// 清屏
 		function commandCls(){
 
@@ -224,8 +226,14 @@
 			
 			var chatAvatarImg=document.createElement('img');
 			chatAvatarImg.classList.add('chatAvatarImg'+myself);
-			chatAvatarImg.setAttribute("src", "source/images/avatars/"+avatar);
-			
+
+			if(avatar==="default.jpg" || avatar==="noir.jpg"){
+				chatAvatarImg.setAttribute("src", "source/images/avatars/"+avatar);
+			}
+			else{
+				chatAvatarImg.setAttribute("src",avatar);
+			}
+
 			var chatName=document.createElement('div');
 			chatName.classList.add('chatName'+myself);
 			
