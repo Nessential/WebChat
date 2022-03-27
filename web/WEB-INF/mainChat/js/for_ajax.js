@@ -41,7 +41,7 @@ function getAvatarByName(username){
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState===4 && xmlhttp.status===200) {
       var data = JSON.parse(this.responseText);
-      temp_picture = data.picture;
+      temp_picture = data[0].picture;
     }
   }
   xmlhttp.open("GET","/get/inform?username="+username,false);
@@ -53,6 +53,7 @@ document.onreadystatechange = function(){
   if(document.readyState==="complete")
   {
     loadXMLDoc();
+    let timer = window.setInterval("getUpdate()",3000);
   }
 };
 
@@ -71,7 +72,7 @@ function getUpdate(){
       loadChats(myArr)
     }
   }
-  xmlhttp.open("GET","/chat/getChatByTime?timestamp="+newestTime,true);
+  xmlhttp.open("GET","/chat/getChatByTime?timestamp="+newestTime,false);
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send();
 }

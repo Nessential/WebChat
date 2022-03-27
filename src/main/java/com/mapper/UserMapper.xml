@@ -26,7 +26,7 @@
     </select>
 
  <select id="getUser" resultType="User">
-     select *from user where uid= #{uid} and username=#{username} and picture=#{picture}
+     select *from user where username=#{username}
  </select>
 
 <select id="register" resultType="User">
