@@ -6,7 +6,7 @@ create table `user`
     `uid`      int(10) AUTO_INCREMENT,
     `username` varchar(30),
     `password` varchar(30),
-    `picture`  text,
+    `picture`  MEDIUMBLOB,
     KEY `uid` (`uid`)
 );
 insert into `user` (`uid`,`username`,`password`,`picture`)values
@@ -31,7 +31,8 @@ insert into `chat`(`name`,`value`,`time`)values
 create table `online`
 (
     `uid`  int not null,
-    `name` varchar(30)
+    `name` varchar(30),
+    `overdue` bigint
     );
 
 create unique index online_uid_uindex

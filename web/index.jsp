@@ -18,9 +18,7 @@
 </head>
 
 <body>
-<script>
-
-
+<script src="js/cookies.js">
 </script>
 
 <form action="/login/newlogin"  method="get" id="myform" >
@@ -48,6 +46,8 @@
 
 
 <a href="/register"> 迁移注册</a>
+<a href="/login">login</a>
 </body>
 
 </html>
+9

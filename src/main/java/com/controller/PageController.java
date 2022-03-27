@@ -14,4 +14,8 @@ public class PageController {
     public String register(Model model){
         return "/WEB-INF/mainChat/register.html";
     }
+    @RequestMapping("/login")
+    public String login(Model model){
+        return "/WEB-INF/mainChat/login.html";
+    }
 }
