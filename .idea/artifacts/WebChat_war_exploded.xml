@@ -35,6 +35,8 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.2" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.2" />
           <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.79" />
+          <element id="library" level="project" name="Maven: org.aspectj:aspectjrt:${aspectj.version}" />
+          <element id="library" level="project" name="Maven: org.aspectj:aspectjweaver:${aspectj.version}" />
         </element>
       </element>
     </root>

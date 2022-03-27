@@ -4,23 +4,35 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mapper.UserMapper">
 
-<!--<select id="getUsername" resultType="User" >
-    select  * from building.user  where username=#{username}
+<select id="getUsername" resultType="User" >
+    select  * from user  where username=#{username}
 
 </select>
 
 
 <select id="getUserpsw" resultType="User">
-    select  * from building.user where password=#{password}
-</select>-->
-
-
-<select id="userRegister" resultType="User">
-    INSERT into user(username, password) values(#{username} ,#{password})
+    select  * from user where  password=#{password}
 </select>
+
+
+<select id="AddUsername" resultType="User">
+    INSERT into user(username) values(#{username})
+</select>
+    <select id="AddPassword" resultType="User">
+        INSERT into user(password) values(#{password})
+    </select>
+    <select id="AddPicture" resultType="User">
+        INSERT into user(picture) values(#{picture})
+    </select>
+
  <select id="getUser" resultType="User">
-     select *from user where username=#{username}
+     select *from user where uid= #{uid} and username=#{username} and picture=#{picture}
  </select>
+
+<select id="register" resultType="User">
+    INSERT INTO user(username, password,picture)  values (#{username},#{password},#{picture})
+</select>
+
     <select id="userlogin" resultType="User">
         select * from user  where username=#{username} and password=#{password}
     </select>
