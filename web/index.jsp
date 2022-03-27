@@ -21,7 +21,7 @@
 <script src="js/cookies.js">
 </script>
 
-<form action="/login/newlogin"  method="get" id="myform" >
+<form action="/login/newlogin"  method="post" id="myform" >
   <input type="text" id="username" name="username"/>
   <input type="password" id="password" name="password"/>
   <input type="submit" value="提交" id="login" />

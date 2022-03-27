@@ -24,6 +24,7 @@ public class ChatController {
     public String newChat(Chat chat){
         System.out.println(chat);
 
+
         chatService.newChat(chat);
         return "你妈的";
     }
