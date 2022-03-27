@@ -103,6 +103,26 @@
 		
 		// <!-------------------------------------控制台相关函数声明------------------------------------->
 			
+		// 控制台主函数，调用控制台命令
+		function command(args){
+			if (args.indexOf(commandPrefix)==0)
+				argv=args.split(" ");
+			
+			switch(argv[0]){
+				
+				case "cls":
+					commandCls(argv.slice(1));
+					break;
+					
+				case "help":
+					commandHelp(argv.slice(1));
+					break;
+					
+				case "speak":
+					showChatUnit(argv.slice(1))
+			}
+		}
+		
 		// 清屏
 		function commandCls(){
 
@@ -112,6 +132,7 @@
 			for(i=chatDel.length-1;i>=0;i--)
 				chatWindow.removeChild(chatDel[i]);
 
+			redrawHTML();
 		}
 
 		// 显示帮助信息
@@ -318,12 +339,16 @@
 			
 			document.getElementsByClassName("inputForm")[0].style.height=margin+"px";
 			
+			// 调整展开/收起按钮高度
 			(t=document.getElementsByClassName("inputShowValue")[0]).style.height=margin+"px";
 			t.value=(isInputShow? "Hide":"Show");
 			
 			document.getElementsByClassName("inputSubmit")[0].style.height=margin+"px";
 			
+			// 调整输入框、提示文本高度
 			document.getElementsByClassName("inputValueText")[0].style.height=margin+"px";
+			document.getElementsByClassName("inputValueTextHelp")[0].style.top=-margin+"px";
+			
 		}
 		
 		// 引导重绘控件
@@ -371,21 +396,18 @@
 			
 			let argvPointer=0;
 			
-			// 按键落下/抬起 仅计算一遍
-
-			
 			// 触发提示文本
 			if (value.value.slice(0,commandPrefix.length)==commandPrefix){
 
 				valueHelp.value="$->";
 				
-				
-				
 				let result=[];
 				
 				result=keywordSearch(argv, commandKeyword);
 				inputHelpInfo+=result;
-				inputHelpFill=( (t=inputHelpInfo.split(" "))[argv.length-1][0]=="["? false:true );
+				
+				if (( t=inputHelpInfo.split(" ") )[argv.length-1]!= undefined )
+					inputHelpFill=( t[argv.length-1][0]=="["? false:true );
 				
 				valueHelp.value+=inputHelpInfo;
 				
@@ -395,7 +417,7 @@
 				valueHelp.value="";
 			}
 			
-			// 自动填充函数
+			// 自动填充函数 仅在按键落下时执行 防止执行重复
 			if (isKeyDown==true){
 				// 当按下 ↑ 或 ↓ 则读取上/下一条历史输入
 				if (event.keyCode==38){
@@ -443,15 +465,13 @@
 				return;
 			}
 
-
 			// 输入回车
 			if (event.keyCode==13){
 				
+				event.preventDefault();
 				
 				let value=document.getElementsByClassName("inputValueText")[0];
 				let valueText=value.value;
-				
-				event.preventDefault();
 				
 				if ( !valueText || valueText == "\n" ){
 					value.value="";
@@ -461,6 +481,7 @@
 				inputHistory.push(valueText);
 				inputHistoryRead=0;
 				
+				// 检查是否有违禁命令，防止被hack
 				for (i=0;i<inputBannedLabel.length;i++){
 					if (valueText.indexOf("<"+inputBannedLabel[i])!=-1 || valueText.indexOf(inputBannedLabel[i]+">")!=-1 || valueText.indexOf("</"+inputBannedLabel[i]+">")!=-1 ){
 						showChatUnit("風又音理", "<div class='chatValueTextWarning'>你没有使用此命令的权限。</div>", "default.jpg");
@@ -471,7 +492,6 @@
 					}
 				}
 				
-				
 				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix){
 					showChatUnit("ノワール", value.value, "noir.jpg", true);
 					value.value="";
@@ -479,7 +499,6 @@
 				}
 
 				else{
-
 					
 					let argv=valueCommand.slice(3).split(" ");
 					let command=argv[0];
@@ -707,6 +726,8 @@
 			
 			return result;
 		}
+		
+		
 		
 		
 	</script>
