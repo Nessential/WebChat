@@ -54,7 +54,8 @@ body{
 	width: 100%;
 }
 
-.inputValueText{
+.inputValueText, .inputValueTextHelp{
+	z-index: 10;
 	float: left;
 	margin: 0;
 	padding: 0;
@@ -63,12 +64,25 @@ body{
 	border-top: solid 1px #999;
 	width: 80%;
 	height: 30px;
+	background-color: rgba(255,255,255,0);
 
 	overflow: hidden;
 	resize: none;
 
 	font-size: 22px;
 	font-family: "楷体";
+	position: relative;
+}
+
+.inputValueTextHelp{
+	color: #ccc;
+	z-index: 0;
+	float: none;
+	position: relative;
+	border: 0;
+	top: -31px;
+
+	user-select: none;
 }
 
 

@@ -44,6 +44,23 @@
 		inputHistoryPointer = 0;
 		inputHistoryRead = 0;
 		
+		searchPass=false;
+		searchKeyword="";
+		
+		const commandKeyword=[ 
+			["cls", ["/?"] ], 
+			
+			["help", ["/?"] ], 
+			
+			["speak", 
+			 ["[nickname]", 
+			  ["[value]", 
+			   ["[avatar]", 
+				["[*from]"] ] ] ], 
+			 ["/?"] ], 
+			
+			["timestamp", ["[*type]"], ["/?"] ] ];
+		
 		// <!-------------------------------------外部函数------------------------------------->
 		
 		// 计算文本在页面所占px宽度 -- 扩展String原型方法pxWidth
@@ -331,29 +348,89 @@
 		}
 		
 		// 提交表单后触发生成对话
-		function chatPost(event, pass=false, str=""){
+		function chatPost(event, isKeyDown, str=""){
 			
 			event=event||window.Event;
 			
 			value=document.getElementsByClassName("inputValueText")[0];
 			
-			// 当按下 ↑ 则读取上一条历史输入
-			if (event.keyCode==38){
-				event.preventDefault();
+			// 提示文本框
+			valueHelp=document.getElementsByClassName("inputValueTextHelp")[0];
+			
+			// 默认禁用自动填充
+			let inputHelpFill=false;
+			
+			let inputHelpInfo="";
+			
+			let args=value.value.slice(commandPrefix.length);
+
+			let argv=args.split(" ");
+			
+			// 已读取argv的个数
+			let argvRead=0;
+			
+			let argvPointer=0;
+			
+			// 按键落下/抬起 仅计算一遍
+
+			
+			// 触发提示文本
+			if (value.value.slice(0,commandPrefix.length)==commandPrefix){
+
+				valueHelp.value="$->";
 				
-				value.value=( (t=inputHistory[ inputHistory.length-(inputHistoryRead=(++inputHistoryRead<=inputHistory.length? inputHistoryRead:inputHistory.length) ) ])==undefined? "":t );
 				
-				return;
+				
+				let result=[];
+				
+				result=keywordSearch(argv, commandKeyword);
+				inputHelpInfo+=result;
+				inputHelpFill=( (t=inputHelpInfo.split(" "))[argv.length-1][0]=="["? false:true );
+				
+				valueHelp.value+=inputHelpInfo;
+				
 			}
 			
-			if (event.keyCode==40){
-				event.preventDefault();
-				
-				value.value=( (inputHistoryRead=(--inputHistoryRead<0? 0:inputHistoryRead)) >= 1 ? inputHistory[ inputHistory.length - inputHistoryRead]:"");
-				
-				return;
+			else {
+				valueHelp.value="";
 			}
 			
+			// 自动填充函数
+			if (isKeyDown==true){
+				// 当按下 ↑ 或 ↓ 则读取上/下一条历史输入
+				if (event.keyCode==38){
+					event.preventDefault();
+
+					value.value=( (t=inputHistory[ inputHistory.length-(inputHistoryRead=(++inputHistoryRead<=inputHistory.length? inputHistoryRead:inputHistory.length) ) ])==undefined? "":t );
+
+					return;
+				}
+
+				if (event.keyCode==40){
+					event.preventDefault();
+
+					value.value=( (inputHistoryRead=(--inputHistoryRead<0? 0:inputHistoryRead)) >= 1 ? inputHistory[ inputHistory.length - inputHistoryRead]:"");
+
+					return;
+				}
+
+				// tab自动填充提示文本内容
+				if (event.keyCode==9){
+					event.preventDefault();
+
+					if (inputHelpFill){
+						let inputHelpInfoOutput = valueHelp.value.split(" ").slice(0,argv.length);
+						value.value="";
+						
+						for(i=0;i<inputHelpInfoOutput.length;i++){
+							value.value+=inputHelpInfoOutput[i];
+							
+							if (i<inputHelpInfoOutput.length-1)
+								value.value+=" ";
+						}
+					}
+				}
+			}
 			
 			// 当按下回车，或输入为空时返回。
 			if (value.value == "undefined")
@@ -395,7 +472,7 @@
 				}
 				
 				
-				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix || pass ){
+				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix){
 					showChatUnit("ノワール", value.value, "noir.jpg", true);
 					value.value="";
 					redrawHTML();
@@ -594,6 +671,43 @@
 			return result;
 		}
 		
+		// 搜索关键字 args=输入的部分关键字 argv=前往搜索的数组
+		function keywordSearch(args, argv){
+			
+			if (argv==undefined )
+				return undefined;
+			
+			let result="";
+			
+			let t=[];
+			
+
+			let i=0;
+			for(i=0;i<argv.length;i++){
+				let keyword=argv[i][0];
+
+				if ( (keyword.length>1) && (keyword.indexOf(args[0])==0 || (keyword.indexOf("[")==0 && args[0]==undefined) ) ){
+					result=keyword+" ";
+					
+					
+					if(argv[i][1]!=undefined){
+						t=keywordSearch(args.slice(1), argv[i]);
+
+						if (t!=undefined && t!=[]){
+							result+=t+" ";
+						}
+					}
+					
+					if (keyword.indexOf(args[0])==0)
+						// 删去结尾多余空格
+						result=result.slice(0,-1);
+				}
+
+			}
+			
+			return result;
+		}
+		
 		
 	</script>
 	
@@ -609,9 +723,10 @@
 	<div class="input">
 		<div class="inputWindow">
 			<form class="inputForm">
-				<textarea rows="1" cols="60" onKeyDown="chatPost(event)" class="inputValueText"></textarea>
-				<input type="button" class="inputShowValue" value="Show" onClick=inputShowValue()>
-				<input type="button" class="inputSubmit" value="Sent" onClick=chatPost()>
+				<textarea rows="1" cols="60" onKeyDown="chatPost(event, true)" onKeyUp="chatPost(event, false)" class="inputValueText"></textarea>
+				<input type="button" class="inputShowValue" value="Show" onClick="inputShowValue()">
+				<input type="button" class="inputSubmit" value="Sent" onClick="chatPost()">
+				<textarea rows="1" cols="60" class="inputValueTextHelp" readonly></textarea>
 			</form>
 		</div>
 	</div>
