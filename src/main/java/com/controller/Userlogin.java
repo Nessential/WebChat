@@ -40,7 +40,9 @@ public class Userlogin {
       return "/index.jsp";
     }
    }
-
+public void laji (){
+    System.out.println("xxl");
+}
 
 
 

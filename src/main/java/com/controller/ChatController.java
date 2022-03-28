@@ -30,6 +30,7 @@ public class ChatController {
         return "你妈的";
     }
 
+
     @RequestMapping("/getchat")
     public String getChat(int n){
         System.out.println(n);
