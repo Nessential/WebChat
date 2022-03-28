@@ -8,17 +8,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    int id;
+    int uid;
     String username;
     String password;
+    String picture;
+    long time;
 
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
+                "uid=" + uid +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", picture='" + picture + '\'' +
+                ", time=" + time +
                 '}';
     }
-
 }

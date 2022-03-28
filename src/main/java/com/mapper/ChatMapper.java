@@ -10,4 +10,5 @@ public interface ChatMapper {
 
     int newChat(Chat chat);
     List<Chat> getChatByTime(long timestamp);
+    long Addtime(String name,long addtime);
 }

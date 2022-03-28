@@ -16,9 +16,9 @@ public class UserRegister {
     @Qualifier("UserServiceImpl")
     private UserService userService;
 
-@RequestMapping("/newregiter")
-    public String register(User user,HttpSession session){
-    userService.userRegister(user);
-    return "/WEB-INF/register.jsp";
+@RequestMapping("/newregister")
+    public String register(String username,String password,String picture,HttpSession session){
+        userService.register(username,password,picture);
+        return "redirect:/login";
 }
 }

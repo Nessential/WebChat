@@ -6,6 +6,7 @@ import com.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,10 +23,13 @@ public class ChatController {
     @RequestMapping("/newchat")
     public String newChat(Chat chat){
         System.out.println(chat);
+        chatService.Addtime(chat);
 
         chatService.newChat(chat);
+
         return "你妈的";
     }
+
 
     @RequestMapping("/getchat")
     public String getChat(int n){

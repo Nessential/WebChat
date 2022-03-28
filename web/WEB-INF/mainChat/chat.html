@@ -6,7 +6,9 @@
 	<link href="styles/chat.css" rel="stylesheet">
 </head>
 <body>
-	<script src="js/for_ajax.js"></script>
+
+<script src="js/for_ajax.js"></script>
+
 	<script>
 		// <!-------------------------------------自定义内容------------------------------------->
 		
@@ -181,6 +183,7 @@
 		}
 		
 		// <!-------------------------------------控制台相关函数声明------------------------------------->
+
 			
 		// 控制台主函数，调用控制台命令
 		function command(args){
@@ -205,7 +208,7 @@
 		function commandSentInfo(){
 
 		}
-		
+
 		// 清屏
 		function commandCls(){
 
@@ -728,6 +731,7 @@
 					if (!debugLocal)
 						sendChatToServer(me,value.value);
 					
+
 					value.value="";
 					redrawHTML();
 				}
@@ -933,7 +937,9 @@
 			<form class="inputForm">
 				<textarea rows="1" cols="60" onKeyDown="chatPost(event, true)" onKeyUp="chatPost(event, false)" class="inputValueText"></textarea>
 				<input type="button" class="inputShowValue" value="Show" onClick="inputShowValue()">
+
 				<input type="button" class="inputSubmit" value="Sent" onClick="chatPost(event,0,'',true)">
+
 				<textarea rows="1" cols="60" class="inputValueTextHelp" readonly></textarea>
 			</form>
 		</div>

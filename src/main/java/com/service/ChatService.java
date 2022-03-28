@@ -8,4 +8,5 @@ public interface ChatService {
     List<Chat> getChat(int n);
     int newChat(Chat chat);
     List<Chat> getChatByTime(long timestamp);
+    long Addtime(Chat chat);
 }
