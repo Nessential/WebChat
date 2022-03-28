@@ -33,6 +33,13 @@ public class ChatServiceImpl implements ChatService{
     }
 
     @Override
+    public long Addtime(Chat chat) {
+        long addtime = 15*60*1000;
+        String name =chat.getName();
+        return this.chatMapper.Addtime(name,addtime);
+    }
+
+    @Override
     public int newChat(Chat chat) {
 //      System.currentTimeMillis()  获取时间戳
         chat.setTime(System.currentTimeMillis());

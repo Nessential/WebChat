@@ -19,5 +19,8 @@
         insert into building.chat(name, value, time)
         VALUE(#{name},#{value},#{time})
     </insert>
+<update id="Addtime" parameterType="Chat">
+        update online where username={#name}   SET overdue = (overdue+(#{addtime}))
+</update>
 </mapper>
 

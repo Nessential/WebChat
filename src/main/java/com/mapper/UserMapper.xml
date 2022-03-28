@@ -40,8 +40,9 @@
 <insert id="gettime" parameterType="User">
     INSERT INTO online (username,overdue) values(#{username},#{time})
 </insert>
-
-
+<delete id="delectTime" parameterType="User">
+delete from online where (#{nowtime})>=online.overdue
+</delete>
 </mapper>
 
 

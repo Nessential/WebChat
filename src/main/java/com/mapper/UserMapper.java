@@ -20,4 +20,5 @@ public int register(@Param("username") String username,@Param("password") String
 
 List<User> getUser(String username);
 public long gettime(@Param("username") String username,@Param("time") long time);
+public void delectTime(long nowtime);
 }

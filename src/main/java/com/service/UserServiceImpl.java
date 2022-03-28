@@ -2,11 +2,13 @@ package com.service;
 import com.main.Chat;
 import com.main.User;
 import com.mapper.UserMapper;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static sun.awt.util.PerformanceLogger.setTime;
-
+@Component
 public class UserServiceImpl implements UserService{
 
     private UserMapper usermapper;
@@ -62,9 +64,14 @@ public class UserServiceImpl implements UserService{
     @Override
     public long gettime(String username) {
       long time = System.currentTimeMillis();
-
-            return usermapper.gettime(username,time+15*60*1000);
+//      设置过期时间
+            return usermapper.gettime(username,time+1*60*1000);
     }
-
+//每隔一分钟执行一词
+    @Scheduled(cron ="0 */1 * * * ?")
+    public void delectTime(){
+        long nowTime=System.currentTimeMillis();
+        usermapper.delectTime(nowTime);
+    }
 
 }

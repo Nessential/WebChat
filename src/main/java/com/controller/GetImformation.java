@@ -20,6 +20,7 @@ public class GetImformation {
     @Autowired
     @Qualifier("UserServiceImpl")
     private UserService userService;
+
     @RequestMapping("/inform")
     public String getUser(String username){
 

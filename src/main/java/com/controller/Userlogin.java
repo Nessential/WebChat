@@ -34,9 +34,7 @@ public class Userlogin {
     if (login != null) {
         session.setAttribute("username",username);
         session.setAttribute("password",password);
-
-
-//hellohellohellohellohellohello?
+            userService.gettime(username);
         return "redirect:/mainchat";
     } else {
       return "/index.jsp";
