@@ -3,7 +3,6 @@ html{
 	font-family: '华文细黑';
 	width: 100%;
 	height: 100%;
-	float: left;
 	overflow-y: hidden;
 }
 
@@ -113,8 +112,58 @@ body{
 .groupWindow{
 	height: 100%;
 	width: 100%;
-	background-color: darkgray;
+	background-color: rgb(188, 253, 255);
 }
+
+.userListWindow{
+	float: left;
+}
+
+.userListInner{}
+
+.userListUnit{
+	float: left;
+	height: 50px;
+	margin: 0 20px;
+}
+
+.userListAvatar{
+	height: 50px;
+}
+
+.userListAvatar{
+	float: left;
+}
+
+.userListAvatarImg{}
+
+.userListNickname{
+	float: left;
+	margin-left: 15px;
+	position: relative;
+	top: calc(50% - 15px);
+}
+
+
+.userListNicknameText{
+	align-items: center;
+	font-size: 24px;
+	height: auto;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	word-break: keep-all;
+	overflow: hidden;
+	width: 130px;
+}
+
+.userListMotto{}
+
+.userListMottoText{
+	display: none;
+	font-size: 16px;
+	color: #666;
+}
+
 
 .timeInner{
 	float: left;
@@ -157,7 +206,7 @@ body{
 	width: 100%;
 }
 
-.chatInner{
+.chatInner, .userListInner{
 	width: 100%;
 	float: left;
 	padding-top: 20px;
@@ -174,12 +223,15 @@ body{
 	float: left;
 }
 
-.chatAvatarImg, .chatAvatarImgSelf{
+.chatAvatar{
+	margin: 0 0 0 20px;
+}
+
+.chatAvatarImg, .chatAvatarImgSelf, .userListAvatarImg{
 	border-radius: 50px;
 	width: 50px;
 	height:50px;
 	
-	margin: 0 0 0 20px;
 }
 
 .chatName{
@@ -222,7 +274,7 @@ body{
 	float: right;
 }
 
-.chatAvatarImgSelf{
+.chatAvatarSelf{
 	margin: 0 20px 0 0;
 }
 
