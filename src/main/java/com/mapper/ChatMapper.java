@@ -8,6 +8,7 @@ public interface ChatMapper {
 
     List<Chat> getChat(int n);
 
+
     int newChat(Chat chat);
     List<Chat> getChatByTime(long timestamp);
     long Addtime(String name,long addtime);

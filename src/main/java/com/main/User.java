@@ -13,7 +13,7 @@ public class User {
     String password;
     String picture;
     long time;
-
+    long overdue;
     @Override
     public String toString() {
         return "User{" +

@@ -31,7 +31,7 @@
 <br>
 
 
-<form action="/chat/newchat" method="get" id="form" >
+<form action="/chat/newchat" method="post" id="form" >
   <input type="text" name="username"/>
   <input type="text" name="value"/>
   <input type="text" name="time">
@@ -50,4 +50,3 @@
 </body>
 
 </html>
-9

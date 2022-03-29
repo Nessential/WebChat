@@ -30,10 +30,9 @@ insert into `chat`(`name`,`value`,`time`)values
     ("friend","testtest",1616547048);
 create table `online`
 (
-    `uid`  int auto_increment,
     `name` varchar(30),
     `overdue` bigint,
-    KEY `uid`(`uid`)
+
     );
 
 create unique index online_uid_uindex

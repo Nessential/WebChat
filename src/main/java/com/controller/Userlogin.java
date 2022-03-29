@@ -19,7 +19,7 @@ import javax.swing.*;
 
 @Controller
 
-@Scope(value="prototype")
+
 @RequestMapping("/login")
 public class Userlogin {
   @Autowired
@@ -33,16 +33,14 @@ public class Userlogin {
     User login = userService.userlogin(username, password);
     if (login != null) {
         session.setAttribute("username",username);
-        session.setAttribute("password",password);
+
             userService.gettime(username);
         return "redirect:/mainchat";
     } else {
       return "/index.jsp";
     }
    }
-public void laji (){
-    System.out.println("xxl");
-}
+
 
 
 

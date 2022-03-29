@@ -43,6 +43,11 @@
 <delete id="delectTime" parameterType="User">
 delete from online where (#{nowtime})>=online.overdue
 </delete>
+
+<!--    获取在线列表 -->
+    <select id="getOnline" resultType="User">
+        select * from online
+    </select>
 </mapper>
 
 

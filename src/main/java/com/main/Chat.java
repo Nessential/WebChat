@@ -4,7 +4,10 @@ public class Chat {
     String name;
     String value;
     long time;
+
 //聊天
+
+
     @Override
     public String toString() {
         return "Chat{" +
@@ -13,6 +16,9 @@ public class Chat {
                 ", time=" + time +
                 '}';
     }
+
+
+
 
     public Chat() {
     }

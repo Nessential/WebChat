@@ -27,6 +27,8 @@ public class ChatServiceImpl implements ChatService{
         return this.chatMapper.getChat(n);
     }
 
+    //获取用户名和历史聊天内容
+
     @Override
     public List<Chat> getChatByTime(long timestamp) {
         return this.chatMapper.getChatByTime(timestamp);

@@ -15,4 +15,7 @@ public interface UserService {
        List<User> getUser(String username);
        public User userlogin(String username ,String password);
       public long gettime(String username);
+//获取在线用户
+    List<User> getOnline();
+
 }

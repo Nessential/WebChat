@@ -51,4 +51,18 @@
     <mvc:resources mapping="/js/**" location="/WEB-INF/mainChat/js/" />
     <mvc:resources mapping="/static/**" location="/WEB-INF/mainChat/static/" />
     <mvc:resources mapping="/fonts/**" location="/WEB-INF/mainChat/styles/fonts/" />
+    
+    
+<!--    配置拦截器-->
+ <!--  <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+          <mvc:exclude-mapping path="/WEB-INF/mainChat/login.html" />
+          <mvc:exclude-mapping path="/login/*" />
+           <mvc:exclude-mapping path="/register.html" />
+            <bean class="com.interceptor.MyInterceptor"/>
+        </mvc:interceptor>
+
+    </mvc:interceptors>-->
+
 </beans>

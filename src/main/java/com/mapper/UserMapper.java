@@ -6,8 +6,8 @@ import java.util.List;
 
 
 public interface UserMapper {
-   public User getUsername(String username);
-    public User getUserpwd(String password);
+    public User getUsername(String username);
+   public User getUserpwd(String password);
 
 
 public User userlogin(@Param("username") String username, @Param("password") String password);
@@ -21,4 +21,6 @@ public int register(@Param("username") String username,@Param("password") String
 List<User> getUser(String username);
 public long gettime(@Param("username") String username,@Param("time") long time);
 public void delectTime(long nowtime);
+//获取在线用户
+    List<User> getOnline();
 }

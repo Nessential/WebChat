@@ -65,10 +65,17 @@ public class UserServiceImpl implements UserService{
     public long gettime(String username) {
       long time = System.currentTimeMillis();
 //      设置过期时间
-            return usermapper.gettime(username,time+1*60*1000);
+            return usermapper.gettime(username,time+15*60*1000);
     }
-//每隔一分钟执行一词
-    @Scheduled(cron ="0 */1 * * * ?")
+//获取在线用户
+    @Override
+    public List<User> getOnline() {
+        return usermapper.getOnline();
+    }
+
+
+    //每隔5s执行一词
+    @Scheduled(cron ="*/5 * * * * ?")
     public void delectTime(){
         long nowTime=System.currentTimeMillis();
         usermapper.delectTime(nowTime);
