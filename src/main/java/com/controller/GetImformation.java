@@ -24,7 +24,6 @@ public class GetImformation {
 
     @RequestMapping("/getusers")
     public String getUser(String username){
-
         return JSON.toJSONString(userService.getUser(username));
     }
 

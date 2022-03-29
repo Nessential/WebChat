@@ -31,7 +31,7 @@ insert into `chat`(`name`,`value`,`time`)values
 create table `online`
 (
     `name` varchar(30),
-    `overdue` bigint,
+    `overdue` bigint
 
     );
 
