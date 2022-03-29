@@ -19,6 +19,6 @@ public class UserRegister {
 @RequestMapping("/newregister")
     public String register(String username,String password,String picture,HttpSession session){
         userService.register(username,password,picture);
-        return "redirect:/login/newlogin";
+        return "redirect:/login";
 }
 }
