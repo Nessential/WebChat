@@ -42,7 +42,9 @@ public class Userlogin {
    }
 
 
-
+public void laji(){
+    System.out.println("垃圾 ");
+}
 
 
 
