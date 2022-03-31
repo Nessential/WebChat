@@ -36,4 +36,10 @@ public class GetImformation {
         return JSON.toJSONString(userService.getOnline());
 }
 
+
+//增加后台在线时间
+    @RequestMapping("addOnlineTime")
+    public void addOnlineTime(String username){
+            userService.gettime(username);
+    }
 }
