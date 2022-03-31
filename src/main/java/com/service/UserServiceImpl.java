@@ -73,12 +73,18 @@ public class UserServiceImpl implements UserService{
         return usermapper.getOnline();
     }
 
+    @Override
+    public void delectTime(long time) {
+         usermapper.delectTime(time);
+    }
+
 
     //每隔5s执行一词
-    @Scheduled(cron ="*/5 * * * * ?")
-    public void delectTime(){
-        long nowTime=System.currentTimeMillis();
-        usermapper.delectTime(nowTime);
-    }
+    
+//    @Scheduled(cron ="*/5 * * * * ?")
+//    public void delectTime(){
+//        long nowTime=System.currentTimeMillis();
+//        usermapper.delectTime(nowTime);
+//    }
 
 }

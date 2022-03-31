@@ -13,11 +13,11 @@ public class MyInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession();
         if(session.getAttribute("username")!=null){
-            return true;
+            return false;
         }
+
         request.getRequestDispatcher("index.jsp").forward(request, response);
         System.out.println("拦截后");
-
             return false;
     }
 }

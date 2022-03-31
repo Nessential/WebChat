@@ -25,8 +25,9 @@
   <input type="text" id="username" name="username"/>
   <input type="password" id="password" name="password"/>
   <input type="submit" value="提交" id="login" />
-
-
+</form>
+<form action="/logout" method="post">
+  <input type="submit" value="注销">
 </form>
 <br>
 

@@ -54,11 +54,12 @@
     
     
 <!--    配置拦截器-->
- <!--  <mvc:interceptors>
+<!--   <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
           <mvc:exclude-mapping path="/WEB-INF/mainChat/login.html" />
           <mvc:exclude-mapping path="/login/*" />
+          <mvc:exclude-mapping path="/register/*" />
            <mvc:exclude-mapping path="/register.html" />
             <bean class="com.interceptor.MyInterceptor"/>
         </mvc:interceptor>

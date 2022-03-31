@@ -29,7 +29,10 @@ public class GetImformation {
 
 //获取在线列表
 @RequestMapping("getOnline")
+
     public String getOnline(){
+            long nowTime=System.currentTimeMillis();
+            userService.delectTime(nowTime);
         return JSON.toJSONString(userService.getOnline());
 }
 

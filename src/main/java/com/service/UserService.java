@@ -17,5 +17,6 @@ public interface UserService {
       public long gettime(String username);
 //获取在线用户
     List<User> getOnline();
+    public void delectTime(long time);
 
 }
