@@ -1,3 +1,5 @@
+const url="http:/1.117.237.27:8080";
+
 function loadXMLDoc()
 {
   var xmlhttp;
@@ -8,7 +10,7 @@ function loadXMLDoc()
       loadChats(myArr,true)
     }
   }
-  xmlhttp.open("GET","/chat/getchat?n=20",true);
+  xmlhttp.open("GET",url+"/chat/getchat?n=20",true);
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send();
 }
@@ -44,7 +46,7 @@ function getAvatarByName(username){
       temp_picture = data[0].picture;
     }
   }
-  xmlhttp.open("GET","/get/inform?username="+username,false);
+  xmlhttp.open("GET",url+"/get/getusers?username="+username,false);
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send();
 }
@@ -53,6 +55,7 @@ document.onreadystatechange = function(){
   if(document.readyState==="complete")
   {
     loadXMLDoc();
+	me ="YukinaSor4";
     let timer = window.setInterval("getUpdate()",3000);
   }
 };
@@ -72,7 +75,7 @@ function getUpdate(){
       loadChats(myArr)
     }
   }
-  xmlhttp.open("GET","/chat/getChatByTime?timestamp="+newestTime,false);
+  xmlhttp.open("GET",url+"/chat/getChatByTime?timestamp="+newestTime,false);
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send();
 }
@@ -85,7 +88,7 @@ function sendChatToServer(name,value){
     // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
     xmlhttp=new XMLHttpRequest();
   }
-  xmlhttp.open("GET","/chat/newchat?name="+name+"&value="+value,true);
+  xmlhttp.open("GET",url+"/chat/newchat?name="+name+"&value="+value,true);
   xmlhttp.send();
 }
 

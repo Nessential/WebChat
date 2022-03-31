@@ -3,3 +3,5 @@ incookies=function () {
     console.log(document.getElementById('name').value);
     console.log(document.cookie)
 }
+
+
