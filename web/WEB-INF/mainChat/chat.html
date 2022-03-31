@@ -7,13 +7,13 @@
 </head>
 <body>
 
-<script src="js/for_ajax.js"></script>
+	<script src="js/for_ajax.js"></script>
 
 	<script>
 		// <!-------------------------------------自定义内容------------------------------------->
 		
 		// 本地Debug模式
-		const debugLocal=true;
+		const debugLocal=false;
 		
 		// 隐藏侧边菜单的最大宽度
 		const fullWidth=600;
@@ -39,7 +39,7 @@
 		const inputBannedLabel=["form", "input", "textarea", "menus", "fieldset"];
 		
 		// 默认己方信息 用户名 昵称 头像
-		const chatSelfInfo="Noir ノワール noir.jpg";
+		chatSelfInfo="Noir ノワール noir.jpg";
 		
 		// 默认显示语句
 		const chatDefault=[
@@ -78,6 +78,9 @@
 			
 			["timestamp", ["[*type]"], ["/?"] ] ];
 		
+		userList_getInfo=[];
+		
+		// 用户信息
 		userInfoList=[
 			"Neri 風又音理 default.jpg",
 			"Emotion Emotion kirakira.jpg",
@@ -534,11 +537,10 @@
 			
 			margin=(isInputShow? inputHeightShow:inputHeightHidden);
 			
-			// 调整chatHistory最后两个元素的marginBottom
-			if((t=chatHistory).length){
-				if(t.length>1)
-					t[t.length-2].style.marginBottom=0;
-				
+			// 调整所有chatHistory的marginBottom
+			for(i=0;i<(t=chatHistory).length;i++){
+					t[i].style.marginBottom=0;
+			if(t.length>0)
 				t[t.length-1].style.marginBottom=margin+20+"px";
 			}
 			
@@ -568,6 +570,8 @@
 			// userListNickname隐藏时，userListAvatar居中
 			redrawMargin( document.getElementsByClassName("userListAvatar"), userListAvatarMarginLeft+"px" );
 			
+			// 调整naviLogo显示状态
+			document.getElementsByClassName("naviLogo")[0].style.display=( isFull? "none":"block" );
 			
 		}
 		
@@ -612,7 +616,8 @@
 			
 			let inputHelpInfo="";
 			
-			let args=value.value.slice(commandPrefix.length);
+			// 截取命令部分：去除前缀及左端空格
+			let args=value.value.slice(commandPrefix.length).replace(/(^\s*)/g, "");
 
 			let argv=args.split(" ");
 			
@@ -947,6 +952,17 @@
 	
 	<div class="navi">
 		<div class="naviWindow">
+			<div class="naviLogout">
+				<div class="naviLogoutText">
+					Logout
+				</div>
+			</div>
+			<div class="naviLogo">
+				WebChat
+			</div>
+			<div class="naviUserAvatar">
+				<img class="naviUserAvatarImg" src="source/images/avatars/noir.jpg">
+			</div>
 		</div>
 	</div>
 	
@@ -979,6 +995,7 @@
 		user=new userList();
 		user.add(chatSelfInfo);
 		user.load(userInfoList);
+		
 		// --------------------------在线列表菜单信息-----------------------------
 		
 		// 显示在线列表中的所有用户
@@ -1018,6 +1035,8 @@
 		
 		// 监听浏览器尺寸变化
 		window.addEventListener("resize", redrawHTML);
+		
+		document.getElementsByClassName("inputValueText")[0].focus();
 	</script>
 </body>
 </html>

@@ -25,10 +25,45 @@ body{
 }
 
 .naviWindow{
+	float: left;
 	width: 100%;
 	height: 70px;
 	background-color: aquamarine;
 }
+
+.naviLogo{
+	float: left;
+	position: fixed;
+	left: calc(( 100% - 158.67px ) / 2);
+	top: calc( (70px - 47.6px) / 2);
+
+	font-size: 36px;
+	color: rgba(255,255,255,.7);
+
+	font-family: "微软雅黑";
+}
+
+.naviLogout{
+	float: left;
+
+	margin: 0 20px;
+	font-size: 30px;
+	color: rgba(255, 255, 255, .7);
+	border: solid 3px rgba(255, 255, 255, .7);
+
+	position: relative;
+	top: calc( 70px - 47.14px - 10px );
+}
+
+.naviUserAvatar{
+	float: right;
+	margin: 10px 20px;
+}
+
+.naviUserAvatarImg{
+
+}
+
 
 
 
@@ -141,13 +176,13 @@ body{
 	float: left;
 	margin-left: 15px;
 	position: relative;
-	top: calc(50% - 15px);
+	top: calc(50% - 12.5px);
 }
 
 
 .userListNicknameText{
 	align-items: center;
-	font-size: 24px;
+	font-size: 18px;
 	height: auto;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -227,7 +262,7 @@ body{
 	margin: 0 0 0 20px;
 }
 
-.chatAvatarImg, .chatAvatarImgSelf, .userListAvatarImg{
+.chatAvatarImg, .chatAvatarImgSelf, .userListAvatarImg, .naviUserAvatarImg{
 	border-radius: 50px;
 	width: 50px;
 	height:50px;
