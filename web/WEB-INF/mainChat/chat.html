@@ -926,6 +926,27 @@
 				showUserListUnit(argv[i]);
 		}
 		
+		// 登出函数
+		function chatLogOut(){
+			
+		}
+		
+		// 
+		function server_getHistory(){
+			let xmlhttp;
+			xmlhttp=new XMLHttpRequest();
+			xmlhttp.onreadystatechange=function() {
+			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+				let result = JSON.parse(this.responseText);
+				return result;
+			}
+			}
+			xmlhttp.open("GET",url+"/chat/getchat?n=20",true);
+			xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+			xmlhttp.send();
+			
+		}
+		
 	</script>
 	
 	<style type="text/css">
@@ -953,9 +974,7 @@
 	<div class="navi">
 		<div class="naviWindow">
 			<div class="naviLogout">
-				<div class="naviLogoutText">
-					Logout
-				</div>
+				<input type="button" class="naviLogoutText" value="Log out" onClick="chatLogOut()">
 			</div>
 			<div class="naviLogo">
 				WebChat
@@ -984,6 +1003,8 @@
 	</div>
 	
 	<script>
+		// chatHistory=server_getHistory();
+		
 		// 读取浏览器尺寸
 		readSizeHTML();
 		

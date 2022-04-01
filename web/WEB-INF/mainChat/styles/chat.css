@@ -1,3 +1,11 @@
+@font-face{
+	font-family: SAOUIRegular;
+	src: url('fonts/SAOUIRegular.otf');
+}
+@font-face{
+	font-family: zh-CN;
+	src: url('fonts/文泉驿正黑.ttc');
+}
 html{
 	background-color: #FFCCCC;
 	font-family: '华文细黑';
@@ -47,12 +55,26 @@ body{
 	float: left;
 
 	margin: 0 20px;
-	font-size: 30px;
-	color: rgba(255, 255, 255, .7);
-	border: solid 3px rgba(255, 255, 255, .7);
 
 	position: relative;
 	top: calc( 70px - 47.14px - 10px );
+}
+
+.naviLogoutText{
+	font-size: 30px;
+	font-family: 'SAOUIRegular';
+
+	color: #aaa;
+
+    background-color: #fff;
+    border: 4px solid #ccc;
+}
+
+.naviLogoutText:hover{
+    background-color: #ccc;
+    border: 4px solid #fff;
+    color: #fff;
+	transition:all .3s;
 }
 
 .naviUserAvatar{
