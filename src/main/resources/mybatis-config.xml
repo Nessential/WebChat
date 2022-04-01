@@ -15,7 +15,7 @@
         <!--    mapper 接口是用于执行自定义SQL语句相关的方法,可以在 mapper 接口定义方法上添加SQL方法注解或者使 mapper 接口绑定 xml 文件-->
         <!--    将包下的名字叫userMapper的接口与配置文件绑定在一起绑定-->
         <mapper resource="com/mapper/UserMapper.xml"/>
-
+        <mapper resource="com/mapper/OnlineMapper.xml"/>
 
         <mapper resource="com/mapper/ChatMapper.xml"/>
     </mappers>

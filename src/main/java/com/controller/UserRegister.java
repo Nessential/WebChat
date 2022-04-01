@@ -30,7 +30,6 @@ public class UserRegister {
     }
     return "redirect:/register";
 }
-public void sdasd(){
-    System.out.println("提交失败再提交");
-}
+
+
 }

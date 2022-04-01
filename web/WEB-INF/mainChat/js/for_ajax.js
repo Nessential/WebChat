@@ -1,4 +1,4 @@
-const url="http:/1.117.237.27:8080";
+const url="";
 
 function loadXMLDoc()
 {
@@ -55,7 +55,7 @@ document.onreadystatechange = function(){
   if(document.readyState==="complete")
   {
     loadXMLDoc();
-	me ="YukinaSor4";
+    me=document.cookie;
     let timer = window.setInterval("getUpdate()",3000);
   }
 };

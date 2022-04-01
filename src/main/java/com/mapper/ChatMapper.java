@@ -1,6 +1,7 @@
 package com.mapper;
 
 import com.main.Chat;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface ChatMapper {
 
     int newChat(Chat chat);
     List<Chat> getChatByTime(long timestamp);
-    long Addtime(String name,long addtime);
+    long Addtime(@Param("name") String name, @Param("addtime") long addtime);
 }

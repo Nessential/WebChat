@@ -18,8 +18,10 @@
         <property name="userMapper" ref="userMapper"/>
     </bean>
     <bean id="ChatServiceImpl" class="com.service.ChatServiceImpl">
-
         <property name="chatMapper" ref="chatMapper"/>
+    </bean>
+    <bean id="OnlineServiceImpl" class="com.service.OnlineServiceImpl">
+        <property name="onlineMapper" ref="onlineMapper"/>
     </bean>
     <!-- 配置事务管理器 -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

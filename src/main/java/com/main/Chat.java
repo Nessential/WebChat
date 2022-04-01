@@ -4,6 +4,7 @@ public class Chat {
     String name;
     String value;
     long time;
+    long overdue;
 
 //聊天
 
