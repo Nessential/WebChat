@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/get")
-
-
 public class OnlineController {
     @Autowired
     @Qualifier("OnlineServiceImpl")

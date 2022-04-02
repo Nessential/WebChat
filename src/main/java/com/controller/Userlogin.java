@@ -36,8 +36,7 @@ private OnlineService onlineService;
 
     User login = userService.userlogin(username, password);
     if (login != null) {
-        session.setAttribute("username",username);
-//            userService.gettime(username);
+
         Online exist = onlineService.getUsername(username);
 
         if(exist==null){

@@ -41,7 +41,8 @@
     INSERT INTO online (username,overdue) values(#{username},#{time})
 </insert>
 <delete id="delectTime" parameterType="User">
-delete from online where (#{nowtime})>=online.overdue
+delete from online where (#{nowtime})>=overdue
+
 </delete>
 
 <!--    获取在线列表 -->

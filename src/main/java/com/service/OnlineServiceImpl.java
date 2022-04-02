@@ -22,12 +22,12 @@ public class OnlineServiceImpl implements OnlineService {
     @Override
     public int InsertOnline(String username) {
         long time = System.currentTimeMillis();
-        return onlineMapper.InsertOnline(username,time+1*5*1000);
+        return onlineMapper.InsertOnline(username,time+1*60*1000);
     }
 
     @Override
     public int updateOnline(String username) {
         long time = System.currentTimeMillis();
-        return onlineMapper.updateOnline(username,time+1*5*1000);
+        return onlineMapper.updateOnline(username,time+1*6*1000);
     }
 }

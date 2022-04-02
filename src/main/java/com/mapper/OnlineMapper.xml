@@ -6,7 +6,7 @@
 
 <select id="getUsername" resultType="Online">
 # 查看online中是否存在对应用户名
-        select *from online where username=(#{username})
+        select *from online where username=#{username}
 </select>
 <!--        插入用户名与过期时间-->
 <insert id="InsertOnline" parameterType="Online">
