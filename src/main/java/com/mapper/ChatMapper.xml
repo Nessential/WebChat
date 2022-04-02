@@ -20,7 +20,7 @@
         VALUE(#{name},#{value},#{time})
     </insert>
 <update id="Addtime"  >
-        insert INTO online (username,overdue) values (#{uswename},#{addtime})
+        insert INTO online (username,overdue) values (#{username},#{time})
 </update>
 </mapper>
 
