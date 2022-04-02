@@ -54,8 +54,8 @@ function getAvatarByName(username){
 document.onreadystatechange = function(){
   if(document.readyState==="complete")
   {
-    loadXMLDoc();
-    me=document.cookie;
+    // 已从前端申请历史记录
+    // loadXMLDoc();
     let timer = window.setInterval("getUpdate()",3000);
   }
 };
@@ -72,10 +72,23 @@ function getUpdate(){
     if (xmlhttp.readyState==4 && xmlhttp.status==200)
     {
       var myArr = JSON.parse(this.responseText);
-      loadChats(myArr)
+      // 已从前端申请历史记录
+      // loadChats(myArr)
     }
   }
   xmlhttp.open("GET",url+"/chat/getChatByTime?timestamp="+newestTime,false);
+  xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xmlhttp.send();
+}
+
+function onlineReset(){
+  var xmlhttp;
+  if (window.XMLHttpRequest)
+  {
+    // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+    xmlhttp=new XMLHttpRequest();
+  }
+  xmlhttp.open("GET",url+"get/online?username="+usernameLocal ,false);
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send();
 }

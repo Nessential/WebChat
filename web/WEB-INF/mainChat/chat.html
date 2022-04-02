@@ -27,6 +27,9 @@
 		
 		// 默认时间格式
 		const timeTypeDefault="HH:MM";
+
+		// 聊天时间间隔(秒)
+		const chatTimeInterval=180-1;
 		
 		// 默认输入框为收起状态
 		isInputShow=false;
@@ -39,7 +42,7 @@
 		const inputBannedLabel=["form", "input", "textarea", "menus", "fieldset"];
 		
 		// 默认己方信息 用户名 昵称 头像
-		chatSelfInfo="Noir ノワール noir.jpg";
+		userLocalInfo="Noir ノワール noir.jpg";
 		
 		// 默认显示语句
 		const chatDefault=[
@@ -54,8 +57,12 @@
 		
 		// 侧边菜单宽度占比
 		sideWidthPer=(100-mainWidthPer)/2;
-		
+
+		// 聊天控件（对话+时间戳）
 		chatHistory = new Array();
+
+		// 聊天记录
+		chatLogs=new Array();
 		
 		inputHistory = [];
 		inputHistoryPointer = 0;
@@ -81,18 +88,19 @@
 		userList_getInfo=[];
 		
 		// 用户信息
-		userInfoList=[
-			"Neri 風又音理 default.jpg",
-			"Emotion Emotion kirakira.jpg",
-			"Rinko SuzumiyaRinko rinko.jpg",
-			"Hana 大米洗澡 hana.jpg",
-			"Van 瓜摊老板 deng.jpg",
-			"Xuan 骂米浴死个马 xuan.jpg",
-			"Halfrain 半城烟雨半城笛 halfrain.jpg",
-			"dd ??dd?? dd.jpg",
-			"BrotherB BrotherB b.jpg",
-			"Yume YukinaSor4 yume.jpg"
-		]
+		userInfoList= new Array();
+
+		// 默认（旧）用户信息
+		// "Neri 風又音理 default.jpg",
+		// 		"Emotion Emotion kirakira.jpg",
+		// 		"Rinko SuzumiyaRinko rinko.jpg",
+		// 		"Hana 大米洗澡 hana.jpg",
+		// 		"Van 瓜摊老板 deng.jpg",
+		// 		"Xuan 骂米浴死个马 xuan.jpg",
+		// 		"Halfrain 半城烟雨半城笛 halfrain.jpg",
+		// 		"dd ??dd?? dd.jpg",
+		// 		"BrotherB BrotherB b.jpg",
+		// 		"Yume YukinaSor4 yume.jpg"
 		
 		userOnlineList=[
 			"Noir",
@@ -102,6 +110,10 @@
 			"BrotherB",
 			"Yume"
 		]
+
+		userRequireList=new Array();
+
+		chatTimeLast=0;
 		
 		// <!-------------------------------------外部函数------------------------------------->
 		
@@ -143,6 +155,8 @@
 		}
 		
 		class userList{
+
+			// args="username nickname avatar"
 			add(args){
 				let user=new userInfo(args);
 				
@@ -165,7 +179,7 @@
 		
 				let i=0;
 				for (i=0;i<argv.length;i++)
-					user.add(argv[i]);
+					this.add(argv[i]);
 			}
 		}
 		
@@ -582,7 +596,13 @@
 			readSizeHTML();
 			
 			child.update();
-			
+
+			// 更新navi栏用户头像（由默认更改至本地用户头像）
+			updateNaviAvatar();
+
+			// 更新在线列表
+			showOnlineUsers(userOnlineList);
+
 			// 重绘value尺寸
 			redrawWidth( document.getElementsByClassName("chatValueSpace"), htmlWidth*mainPer-80 + "px");
 			redrawWidth( document.getElementsByClassName("chatValueSpaceSelf"), htmlWidth*mainPer-80 + "px");
@@ -596,12 +616,13 @@
 			
 			// 重绘时间戳位置
 			redrawTimeValue();
-			
-			
+
+
+			// 滚动至最后一个聊天控件位置
 			toEnd();
 		}
 		
-		// 提交表单后触发生成对话
+		// 输入框更改后触发发送消息、自动填充等判断
 		function chatPost(event, isKeyDown, str="", isSent=false){
 			
 			event=event||window.Event;
@@ -727,10 +748,26 @@
 						return;
 					}
 				}
-				
+
+
 				// 生成对话单元
 				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix){
-					showChatUnit("ノワール", value.value, "noir.jpg", true);
+					// 获取当前unix时间戳
+					let time=Math.round(new Date().getTime()/1000);
+
+					// 若与上一条消息时间间隔大于聊天时间间隔（chatTimeInterval），则打印一条当前时间的时间戳
+					if(chatTimeLast==0 || time-chatTimeLast>chatTimeInterval)
+						showTimeUnit(commandPrefix + "now");
+
+					// 设置上一条（当前）消息发送时间
+					chatTimeLast=time;
+
+					// userLocalInfo="username nickname avatar"
+					let userInfo=userLocalInfo.split(" ");
+					let nickname=userInfo[1];
+					let avatar=userInfo[2];
+
+					showChatUnit(nickname, value.value, avatar, true);
 					
 					// 不为调试模式时，向服务器发送对话信息
 					if (!debugLocal)
@@ -881,6 +918,13 @@
 			
 			return result;
 		}
+
+		// 更新navi栏用户头像
+		function updateNaviAvatar(){
+			// userLocalInfo="username nickname avatar"
+			let avatar=userLocalInfo.split(" ")[2];
+			document.getElementsByClassName("naviUserAvatarImg")[0].setAttribute("src", avatar);
+		}
 		
 		
 		// <!-------------------------------------在线列表函数声明------------------------------------->
@@ -900,7 +944,10 @@
 			
 			let userListAvatarImg=document.createElement('img');
 			userListAvatarImg.classList.add("userListAvatarImg");
-			userListAvatarImg.setAttribute("src", "source/images/avatars/"+userResult.avatar);
+			if (userResult.avatar.indexOf("data:image/")==0)
+				userListAvatarImg.setAttribute("src", userResult.avatar);
+			else
+				userListAvatarImg.setAttribute("src", "source/images/avatars/"+userResult.avatar);
 			
 			let userListNickname=document.createElement('div');
 			userListNickname.classList.add("userListNickname");
@@ -920,31 +967,97 @@
 		}
 		
 		// 显示argv数组(默认为在线列表)内的所有用户至在线列表 
-		function showOnlineUser(argv=userOnlineList){
+		function showOnlineUsers(argv=userOnlineList){
 			let i=0;
-			for (i;i<argv.length;i++)
+
+			// 清空在线列表单元
+			let parent=document.getElementsByClassName("userListWindow")[0];
+			let child=document.getElementsByClassName("userListInner");
+			for (i=child.length-1;i>=0;i--)
+				parent.removeChild(child[i]);
+
+			// 按argv生成在线列表单元
+			for (i=0;i<argv.length;i++)
 				showUserListUnit(argv[i]);
 		}
 		
-		// 登出函数
-		function chatLogOut(){
-			
+		class serverFunctions {
+
+			// 向服务器请求username=args的用户信息
+			getUserInfo(args) {
+				let xmlhttp;
+				xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						let result = JSON.parse(this.responseText);
+						// append="username, nickname, avatar"
+						let append=args+" "+args+" "+result[0].picture;
+						user.add(append);
+					}
+				}
+				xmlhttp.open("GET", url + "/get/getusers?username="+args , false);
+				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				xmlhttp.send();
+			}
+
+			// 向服务器请求argc条历史记录
+			getLogs(argc=20) {
+				let xmlhttp;
+				xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						let result = JSON.parse(this.responseText);
+						chatLogs = result;
+					}
+				}
+				xmlhttp.open("GET", url + "/chat/getchat?n="+argc , false);
+				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				xmlhttp.send();
+			}
+
+			// 向服务器请求在线列表
+			getOnline(argc=20) {
+				let xmlhttp;
+				xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						let result = JSON.parse(this.responseText);
+						for(let i=0;i<result.length;i++)
+							userOnlineList.push(result[i].username);
+					}
+				}
+				xmlhttp.open("GET", url + "/get/getOnline?" , false);
+				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				xmlhttp.send();
+			}
 		}
-		
-		// 
-		function server_getHistory(){
-			let xmlhttp;
-			xmlhttp=new XMLHttpRequest();
-			xmlhttp.onreadystatechange=function() {
-			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-				let result = JSON.parse(this.responseText);
-				return result;
+
+		// 显示对话记录中所有对话
+		function showChatLogs(argv){
+			for (let i=0;i<argv.length;i++){
+
+				let username=argv[i].name;
+				let value=argv[i].value;
+				let time=argv[i].time;
+
+				let isSelf=false;
+
+				if (username=="[self]" || username==usernameLocal){
+					username=userLocalInfo.split(" ")[0];
+					isSelf=true;
+				}
+
+				// 若距上一条消息间隔超过chatTimeInterval秒(聊天时间间隔)，则打印时间戳
+				if (chatTimeLast==0 || time-chatTimeLast>chatTimeInterval) {
+					let date = new Date(time * 1000);
+					showTimeUnit(date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
+					chatTimeLast=time;
+				}
+
+				// showChatUnit(user.%username%.nickname, value, user.%username%.avatar， %isSelf%);
+				eval( "showChatUnit(user." + username + ".nickname, '" + value + "', user." + username + ".avatar, " + isSelf +");" );
+
 			}
-			}
-			xmlhttp.open("GET",url+"/chat/getchat?n=20",true);
-			xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-			xmlhttp.send();
-			
 		}
 		
 	</script>
@@ -973,9 +1086,9 @@
 	
 	<div class="navi">
 		<div class="naviWindow">
-			<div class="naviLogout">
-				<input type="button" class="naviLogoutText" value="Log out" onClick="chatLogOut()">
-			</div>
+			<form action="/logout" class="naviLogout">
+				<input type="submit" class="naviLogoutText" value="Log out">
+			</form>
 			<div class="naviLogo">
 				WebChat
 			</div>
@@ -1003,56 +1116,88 @@
 	</div>
 	
 	<script>
-		// chatHistory=server_getHistory();
-		
+
+		usernameLocal=document.cookie;
+
 		// 读取浏览器尺寸
 		readSizeHTML();
-		
+
 		// 读取控件信息
 		child=new childFunctions();
 		child.update();
-		
+
 		// 载入用户信息
 		user=new userList();
-		user.add(chatSelfInfo);
 		user.load(userInfoList);
-		
+
+		// 生成服务器函数类
+		server=new serverFunctions();
+
+		// 更新登录状态
+		onlineReset();
+		userOnlineList=[];
+		server.getOnline();
+
+		// 清空本地默认在线列表，并向服务器请求在线列表,2秒执行一次
+		setInterval(function(){
+			// 更新登录状态
+			onlineReset();
+			userOnlineList=[];
+			server.getOnline();
+		}, 2*1000);
+
+
+
+		for(let i=0;i<userOnlineList.length;i++)
+			if ( eval("user."+userOnlineList[i].name)==undefined )
+				userRequireList.push(userOnlineList[i]);
+
+		// 向服务器请求聊天记录
+		server.getLogs();
+
+		for(let i=0;i<chatLogs.length;i++)
+			if ( eval("user."+chatLogs[i].name)==undefined )
+				userRequireList.push(chatLogs[i].name);
+
+
+		// 向服务器请求所需的用户信息
+		// 当需求列表（的首项）存在
+		while(userRequireList[0]!=undefined) {
+			// 向服务器请求需求列表顶层用户
+			server.getUserInfo(userRequireList[0]);
+
+			// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
+			userRequireList.splice(0, 1);
+		}
+
+		userLocalInfo=usernameLocal+" "+usernameLocal+" "+ eval("user."+usernameLocal+".avatar");
+
 		// --------------------------在线列表菜单信息-----------------------------
 		
 		// 显示在线列表中的所有用户
-		showOnlineUser(userOnlineList);
+		showOnlineUsers(userOnlineList);
 		
 		// --------------------------显示对话菜单信息-----------------------------
-				
-		showTimeUnit("08:31");
+
+		// 默认打印首个时间戳（旧）
+		// showTimeUnit("08:31");
 
 		// 显示默认对话列表中的所有信息
-		for (i=0;i<chatDefault.length;i++){
+		showChatLogs(chatLogs);
 
-			let username=chatDefault[i][0];
-
-			let isSelf=false;
-
-			if (username=="[self]"){
-				username=chatSelfInfo.split(" ")[0];
-				isSelf=true;
-			}
-
-			let value=chatDefault[i][1];
-
-			// showChatUnit(user.%username%.nickname, value, user.%username%.avatar， %isSelf%);
-			eval( "showChatUnit(user." + username + ".nickname, '" + value + "', user." + username + ".avatar, " + isSelf +");" );
-
-		}
-
-		showTimeUnit(commandPrefix+"now");
+		// showTimeUnit(commandPrefix+"now");
 		
 		
 		// 更新控件信息
 		timeValue=document.getElementsByClassName("timeValue");
 		
-		// 重绘控件尺寸
+		// 重绘控件尺寸 2秒执行一次
 		redrawHTML();
+
+		setInterval(function() {
+			redrawHTML();
+		}, 2*1000);
+
 		
 		// 监听浏览器尺寸变化
 		window.addEventListener("resize", redrawHTML);
