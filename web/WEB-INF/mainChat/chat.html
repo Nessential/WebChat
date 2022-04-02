@@ -1146,14 +1146,30 @@
 			server.getOnline();
 		}, 2*1000);
 
-
-
 		for(let i=0;i<userOnlineList.length;i++)
 			if ( eval("user."+userOnlineList[i].name)==undefined )
 				userRequireList.push(userOnlineList[i]);
 
 		// 向服务器请求聊天记录
 		server.getLogs();
+		setInterval(function(){
+			server.getLogs();
+
+			for(let i=0;i<chatLogs.length;i++)
+				if ( eval("user."+chatLogs[i].name)==undefined )
+					userRequireList.push(chatLogs[i].name);
+
+			while(userRequireList[0]!=undefined) {
+				// 向服务器请求需求列表顶层用户
+				server.getUserInfo(userRequireList[0]);
+
+				// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
+				userRequireList.splice(0, 1);
+			}
+
+			showChatLogs(chatLogs);
+
+			}, 1*1000);
 
 		for(let i=0;i<chatLogs.length;i++)
 			if ( eval("user."+chatLogs[i].name)==undefined )
@@ -1169,6 +1185,7 @@
 			// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
 			userRequireList.splice(0, 1);
 		}
+
 
 		userLocalInfo=usernameLocal+" "+usernameLocal+" "+ eval("user."+usernameLocal+".avatar");
 
