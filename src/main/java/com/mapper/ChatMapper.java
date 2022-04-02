@@ -12,5 +12,5 @@ public interface ChatMapper {
 
     int newChat(Chat chat);
     List<Chat> getChatByTime(long timestamp);
-    long Addtime(@Param("name") String name, @Param("addtime") long addtime);
+    long Addtime(@Param("username") String name, @Param("addtime") long addtime);
 }
