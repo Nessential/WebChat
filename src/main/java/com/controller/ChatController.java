@@ -23,7 +23,7 @@ public class ChatController {
     @RequestMapping("/newchat")
     public String newChat(Chat chat){
         System.out.println(chat);
-        chatService.Addtime(chat);
+
         chatService.newChat(chat);
         return "你妈的";
     }
