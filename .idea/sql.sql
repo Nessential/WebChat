@@ -26,8 +26,8 @@ create table `chat`
     `time`  bigint
 );
 insert into `chat`(`name`,`value`,`time`)values
-                                             ("admin","这是一条测试信息",1616547040),
-                                             ("friend","testtest",1616547048);
+                                             ("admin","这是一条测试信息",1616547040000),
+                                             ("friend","testtest",1616547048000);
 create table `online`
 (
     `username` varchar(30),

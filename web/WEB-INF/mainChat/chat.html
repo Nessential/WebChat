@@ -29,7 +29,7 @@
 		const timeTypeDefault="HH:MM";
 
 		// 聊天时间间隔(秒)
-		const chatTimeInterval=180-1;
+		chatTimeInterval=180;
 		
 		// 默认输入框为收起状态
 		isInputShow=false;
@@ -70,6 +70,9 @@
 		
 		searchPass=false;
 		searchKeyword="";
+
+		// 聊天间隔预运算 -1并*1000转化为毫秒
+		chatTimeInterval=1000*(chatTimeInterval-1);
 		
 		const commandKeyword=[ 
 			["cls", ["/?"] ], 
@@ -753,7 +756,7 @@
 				// 生成对话单元
 				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix){
 					// 获取当前unix时间戳
-					let time=Math.round(new Date().getTime()/1000);
+					let time=Math.round(new Date().getTime());
 
 					// 若与上一条消息时间间隔大于聊天时间间隔（chatTimeInterval），则打印一条当前时间的时间戳
 					if(chatTimeLast==0 || time-chatTimeLast>chatTimeInterval)
@@ -1022,6 +1025,9 @@
 				xmlhttp.onreadystatechange = function () {
 					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 						let result = JSON.parse(this.responseText);
+
+						// 清空在线列表并赋值为服务器返回的更新列表
+						userOnlineList=[];
 						for(let i=0;i<result.length;i++)
 							userOnlineList.push(result[i].username);
 					}
@@ -1034,7 +1040,12 @@
 
 		// 显示对话记录中所有对话
 		function showChatLogs(argv){
+			// 清屏
+			commandCls();
+
 			for (let i=0;i<argv.length;i++){
+
+				timeValue=document.getElementsByClassName("timeValue");
 
 				let username=argv[i].name;
 				let value=argv[i].value;
@@ -1048,8 +1059,8 @@
 				}
 
 				// 若距上一条消息间隔超过chatTimeInterval秒(聊天时间间隔)，则打印时间戳
-				if (chatTimeLast==0 || time-chatTimeLast>chatTimeInterval) {
-					let date = new Date(time * 1000);
+				if (chatTimeLast==0 || Math.abs(time-chatTimeLast)>chatTimeInterval || timeValue==undefined) {
+					let date = new Date(time);
 					showTimeUnit(date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
 					chatTimeLast=time;
 				}
@@ -1058,6 +1069,42 @@
 				eval( "showChatUnit(user." + username + ".nickname, '" + value + "', user." + username + ".avatar, " + isSelf +");" );
 
 			}
+
+			timeValue=document.getElementsByClassName("timeValue");
+
+			redrawHTML();
+		}
+
+		function executeHTML(){
+			// 向服务器发送在线信息
+			onlineReset();
+
+
+			// 获取在线列表与聊天记录
+			server.getOnline();
+			server.getLogs();
+
+			// 将本地缺少的用户信息存入userRequireList
+			for(let i=0;i<userOnlineList.length;i++)
+				if ( eval("user."+userOnlineList[i].name)==undefined )
+					userRequireList.push(userOnlineList[i]);
+
+			for(let i=0;i<chatLogs.length;i++)
+				if ( eval("user."+chatLogs[i].name)==undefined )
+					userRequireList.push(chatLogs[i].name);
+
+			// 向服务器请求所需的（userRequireList）用户信息
+			// 当需求列表（的首项）存在
+			while(userRequireList[0]!=undefined) {
+				// 向服务器请求需求列表顶层用户
+				server.getUserInfo(userRequireList[0]);
+
+				// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
+				userRequireList.splice(0, 1);
+			}
+
+			showChatLogs(chatLogs);
+			redrawHTML();
 		}
 		
 	</script>
@@ -1138,38 +1185,13 @@
 		userOnlineList=[];
 		server.getOnline();
 
-		// 清空本地默认在线列表，并向服务器请求在线列表,2秒执行一次
-		setInterval(function(){
-			// 更新登录状态
-			onlineReset();
-			userOnlineList=[];
-			server.getOnline();
-		}, 2*1000);
+		// 获取聊天记录
+		server.getLogs();
 
 		for(let i=0;i<userOnlineList.length;i++)
 			if ( eval("user."+userOnlineList[i].name)==undefined )
 				userRequireList.push(userOnlineList[i]);
 
-		// 向服务器请求聊天记录
-		server.getLogs();
-		setInterval(function(){
-			server.getLogs();
-
-			for(let i=0;i<chatLogs.length;i++)
-				if ( eval("user."+chatLogs[i].name)==undefined )
-					userRequireList.push(chatLogs[i].name);
-
-			while(userRequireList[0]!=undefined) {
-				// 向服务器请求需求列表顶层用户
-				server.getUserInfo(userRequireList[0]);
-
-				// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
-				userRequireList.splice(0, 1);
-			}
-
-			showChatLogs(chatLogs);
-
-			}, 1*1000);
 
 		for(let i=0;i<chatLogs.length;i++)
 			if ( eval("user."+chatLogs[i].name)==undefined )
@@ -1208,18 +1230,17 @@
 		// 更新控件信息
 		timeValue=document.getElementsByClassName("timeValue");
 		
-		// 重绘控件尺寸 2秒执行一次
+		// 重绘控件尺寸
 		redrawHTML();
 
-		setInterval(function() {
-			redrawHTML();
-		}, 2*1000);
-
-		
 		// 监听浏览器尺寸变化
 		window.addEventListener("resize", redrawHTML);
 		
 		document.getElementsByClassName("inputValueText")[0].focus();
+
+		setInterval(executeHTML, 1*1000);
+
+
 	</script>
 </body>
 </html>

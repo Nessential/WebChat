@@ -1,0 +1,1246 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>WebChat</title>
+	<link href="styles/chat.css" rel="stylesheet">
+</head>
+<body>
+
+	<script src="js/for_ajax.js"></script>
+
+	<script>
+		// <!-------------------------------------自定义内容------------------------------------->
+		
+		// 本地Debug模式
+		const debugLocal=false;
+		
+		// 隐藏侧边菜单的最大宽度
+		const fullWidth=600;
+		
+		// 中央主菜单宽度占比
+		const mainWidthPer=60;
+		
+		// 调用控制台前、后缀
+		const commandPrefix="$->";
+		const commandSuffix="->$ENDLINE";
+		
+		// 默认时间格式
+		const timeTypeDefault="HH:MM";
+
+		// 聊天时间间隔(秒)
+		chatTimeInterval=180;
+		
+		// 默认输入框为收起状态
+		isInputShow=false;
+		
+		// 输入框收起/展开高度
+		const inputHeightHidden=30;
+		const inputHeightShow=100;
+		
+		// 禁用标签
+		const inputBannedLabel=["form", "input", "textarea", "menus", "fieldset"];
+		
+		// 默认己方信息 用户名 昵称 头像
+		userLocalInfo="Noir ノワール noir.jpg";
+		
+		// 默认显示语句
+		const chatDefault=[
+			["Neri", "...探して。"],
+			["Neri", "心臓の中で、探して！"],
+			["Neri", "探して！"],
+			["[self]", "......楽しい旅をします。"],
+			["[self]", "あなたと一緒に、旅を。"],
+		];
+		
+		// <!-------------------------------------预运算内容------------------------------------->
+		
+		// 侧边菜单宽度占比
+		sideWidthPer=(100-mainWidthPer)/2;
+
+		// 聊天控件（对话+时间戳）
+		chatHistory = new Array();
+
+		// 聊天记录
+		chatLogs=new Array();
+		
+		inputHistory = [];
+		inputHistoryPointer = 0;
+		inputHistoryRead = 0;
+		
+		searchPass=false;
+		searchKeyword="";
+
+		// 聊天间隔预运算 -1并*1000转化为毫秒
+		chatTimeInterval=1000*(chatTimeInterval-1);
+		
+		const commandKeyword=[ 
+			["cls", ["/?"] ], 
+			
+			["help", ["/?"] ], 
+			
+			["speak", 
+			 ["[nickname]", 
+			  ["[value]", 
+			   ["[avatar]", 
+				["[*from]"] ] ] ], 
+			 ["/?"] ], 
+			
+			["timestamp", ["[*type]"], ["/?"] ] ];
+		
+		userList_getInfo=[];
+		
+		// 用户信息
+		userInfoList= new Array();
+
+		// 默认（旧）用户信息
+		// "Neri 風又音理 default.jpg",
+		// 		"Emotion Emotion kirakira.jpg",
+		// 		"Rinko SuzumiyaRinko rinko.jpg",
+		// 		"Hana 大米洗澡 hana.jpg",
+		// 		"Van 瓜摊老板 deng.jpg",
+		// 		"Xuan 骂米浴死个马 xuan.jpg",
+		// 		"Halfrain 半城烟雨半城笛 halfrain.jpg",
+		// 		"dd ??dd?? dd.jpg",
+		// 		"BrotherB BrotherB b.jpg",
+		// 		"Yume YukinaSor4 yume.jpg"
+		
+		userOnlineList=[
+			"Noir",
+			"Neri",
+			"Halfrain",
+			"dd",
+			"BrotherB",
+			"Yume"
+		]
+
+		userRequireList=new Array();
+
+		chatTimeLast=0;
+		
+		// <!-------------------------------------外部函数------------------------------------->
+		
+		// 计算文本在页面所占px宽度 -- 扩展String原型方法pxWidth
+		String.prototype.pxWidth = function(font) {
+			const canvas =
+			  String.prototype.pxWidth.canvas ||
+			  (String.prototype.pxWidth.canvas = document.createElement('canvas'))
+			const context = canvas.getContext('2d')
+			font && (context.font = font)
+			const metrics = context.measureText(this)
+			return metrics.width
+		  }
+		
+		// <!-------------------------------------类声明------------------------------------->
+		
+		// 生成控件信息
+		class childInfo{
+			constructor(name, widthPer){
+				this.widthPer=widthPer/100;
+				this.fullWidthPer=1;
+				this.width=htmlWidth*this.widthPer;
+				this.fullWidth=htmlWidth;
+				
+				this.element=document.getElementsByClassName(name)[0];
+			}
+		}
+		
+		class childFunctions{
+			update(){
+				
+				// 生成控件信息
+				this.group=new childInfo("group", sideWidthPer);
+				this.info=new childInfo("info", sideWidthPer);
+				this.chat=new childInfo("chat", mainWidthPer);
+				this.input=new childInfo("input", mainWidthPer);
+				this.window=new childInfo("chatWindow", mainWidthPer);
+			}
+		}
+		
+		class userList{
+
+			// args="username nickname avatar"
+			add(args){
+				let user=new userInfo(args);
+				
+				if (user!=-1)
+					eval ( "this." + args.split(' ')[0] + "= new userInfo('" + args + "');");
+				else
+					console.log("Error at userList()")
+			}
+			
+			del(args){
+				
+			}
+			
+			// 搜索用户信息
+			search(args){
+				return eval( "this." + args );
+			}
+			
+			load(argv){
+		
+				let i=0;
+				for (i=0;i<argv.length;i++)
+					this.add(argv[i]);
+			}
+		}
+		
+		class userInfo{
+			constructor(args="Neri 風又音理 default.jpg"){
+				let argv=args.split(" ");
+				
+				if (argv.length==3){	
+					this.username=argv[0];
+					this.nickname=argv[1];
+					this.avatar=argv[2];
+				}
+				else{
+					console.log("Error at userInfo(): argv.length != 3.");
+					return -1;
+				}
+			}
+		}
+		
+		// <!-------------------------------------控制台相关函数声明------------------------------------->
+
+			
+		// 控制台主函数，调用控制台命令
+		function command(args){
+			if (args.indexOf(commandPrefix)==0)
+				argv=args.split(" ");
+			
+			switch(argv[0]){
+				
+				case "cls":
+					commandCls(argv.slice(1));
+					break;
+					
+				case "help":
+					commandHelp(argv.slice(1));
+					break;
+					
+				case "speak":
+					showChatUnit(argv.slice(1))
+			}
+		}
+		
+		function commandSentInfo(){
+
+		}
+
+		// 清屏
+		function commandCls(){
+
+			let chatWindow=document.getElementsByClassName("chatWindow")[0];
+
+			let chatDel=chatWindow.childNodes;
+			for(i=chatDel.length-1;i>=0;i--)
+				chatWindow.removeChild(chatDel[i]);
+
+		}
+
+		// 显示帮助信息
+		function commandHelp(name="風又音理", avatar="default.jpg", from=false){
+
+			showChatUnit(name, "Console commands list:<br>help 显示本帮助信息。<br>cls 清屏。<br>timestamp 打印一条时间戳。<br>speak 打印一段对话。<br>查询具体语法请用 /? ,如 !$:speak /?", avatar, from);
+
+		}
+		
+		// 跳转到页尾
+		function toEnd(){
+			let t=document.querySelectorAll(".chatInner");
+			if(t.length)
+				t[t.length-1].scrollIntoView();
+		}
+		
+		
+		// <!-------------------------------------时间戳函数声明------------------------------------->
+		
+		// 生成时间戳单元
+		function showTimeUnit(value="08:31"){
+			
+			// 判断是否为命令
+			if (value.slice(0,commandPrefix.length)==commandPrefix){
+				
+				// 当命令为now时，将时间格式赋值为默认状态
+				let args=( ( temp=value.slice( commandPrefix.length ) )=="now"? timeTypeDefault : temp);
+				
+				let argv=args.split(/:|-| /);
+				
+				// 正读取到args的位数
+				let readLength=0;
+				
+				let timeOutput="";
+				
+				// 若入参MM类参数大于1，则默认首次出现的为月份，之后的为分钟
+				let elementCount=0;
+				argv.forEach( element=>{
+					if("MMmm".indexOf(element)!=-1)
+						elementCount++;
+				})
+				
+				let isDate=(elementCount>1? true:false);
+				
+				// 逐条读取
+				for(i=0;i<argv.length;i++){
+					
+					readLength+=argv[i].length;
+					
+					// 照入参args分隔符格式输出分隔符
+					timeOutput+=timeCheck(argv[i], isDate)+( (temp=args[readLength++])==undefined? "" : temp );
+					
+					// 若当前入参为MM类，且isDate为true，则将isDate改为false，即之后的MM类入参被认为是分钟
+					isDate=( ( isDate && ( "MMmm".indexOf(argv[i]) == -1 ) ) ? true : false );
+				}
+				
+				if (timeOutput.indexOf("error")==-1)
+					showTimeUnit(timeOutput);
+				
+				else
+					console.log("Error at function showTimeUnit");
+				
+				return;
+			}
+				
+			
+			var timeInner=document.createElement('div');
+			timeInner.classList.add('timeInner');
+			
+			let timeValue=document.createElement('div');
+			timeValue.classList.add('timeValue');
+			
+			timeValue.style.width=value.pxWidth('normal 16px 华文细黑')+20+"px";
+			
+			timeValue.style.marginLeft=(child.chat.width-timeValue.style.width)/2 + "px";
+			
+			var timeValueText=document.createElement('div');
+			timeValueText.classList.add('timeValueText');
+			timeValueText.innerHTML=value;
+			
+			child.window.element.appendChild(timeInner);
+			timeInner.appendChild(timeValue);
+			timeValue.appendChild(timeValueText);
+			
+			chatHistory.push( (t=document.getElementsByClassName("timeInner"))[t.length-1]);
+		}
+		
+		// 重绘时间戳位置
+		function redrawTimeValue(){
+			for(i=0;i<timeValue.length;i++)
+				// 根据侧边菜单的隐藏与否决定marginLeft的长度
+				(t=timeValue[i].style).marginLeft=((isFull? child.chat.fullWidth : child.chat.width)-Number(t.width.slice(0,-2)))/2 + "px";
+		}
+		
+		// 处理时间格式参数
+		function timeCheck(argv, isDate=false){
+			
+			
+			let t=new Date();
+
+			let year=t.getFullYear();
+			let month=t.getMonth()+1;
+			let date=t.getDate();
+			let day=t.getDay();
+			let hour=t.getHours();
+			let minute=t.getMinutes();
+
+			let result="";
+			
+			switch(argv){
+					
+				case "YYYY":
+					result=year.toString();
+					break;
+					
+				case "yyyy":
+					result=year.toString();
+					break;
+					
+				case "YY":
+					result=year.toString().slice(2,4);
+					break;
+					
+				case "yy":
+					result=year.toString().slice(2,4);
+					break;
+					
+				case "DD":
+					result=toTwoBits(date.toString());
+					break;
+
+				case "dd":
+					result=toTwoBits(date.toString());
+					break;
+
+				case "D":
+					result=date.toString();
+					break;
+
+				case "d":
+					result=date.toString();
+					break;
+
+				// 24小时格式
+				case "HH":
+					result=toTwoBits(hour.toString());
+					break;
+
+				// 12小时格式
+				case "hh":
+					result=toTwoBits( (hour>12? hour-=12 : hour).toString() );
+					break;
+
+				case "H":
+					result=hours.toString();
+					break;
+
+				case "h":
+					result=(hour>12? hour-=12 : hour).toString()
+					break;
+
+				case "MM":
+					result=toTwoBits( ( isDate? month : minute ).toString() ) ;
+					break;
+
+				case "mm":
+					result=toTwoBits( ( isDate? month : minute ).toString() ) ;
+					break;
+
+				case "M":
+					result=( isDate? month : minute ).toString();
+					break;
+
+				case "m":
+					result=( isDate? month : (minute>12? minute-=12 : minute) ).toString()
+					break;
+
+				default:
+					result="error";
+			}
+			
+			return result;
+		}
+		
+		
+		//<!-------------------------------------对话函数声明------------------------------------->
+		
+		// 生成对话单元
+		function showChatUnit(nickname="Miku", value="みくみくみ", avatar="default.jpg", isMyself=false){
+			
+			var myself=(isMyself==true?"Self":"")
+			
+			var chatInner=document.createElement('div');
+			chatInner.classList.add("chatInner");
+			
+			var chatUnit=document.createElement('div');
+			chatUnit.classList.add('chatUnit');
+			
+			var chatAvatar=document.createElement('div');
+			chatAvatar.classList.add('chatAvatar'+myself);
+			
+			var chatAvatarImg=document.createElement('img');
+			chatAvatarImg.classList.add('chatAvatarImg'+myself);
+
+			if(avatar==="default.jpg" || avatar==="noir.jpg"){
+				chatAvatarImg.setAttribute("src", "source/images/avatars/"+avatar);
+			}
+			else{
+				chatAvatarImg.setAttribute("src",avatar);
+			}
+
+			var chatName=document.createElement('div');
+			chatName.classList.add('chatName'+myself);
+			
+			var chatNameText=document.createElement('div');
+			chatNameText.classList.add('chatNameText');
+			chatNameText.innerHTML=nickname;
+			
+			var chatValueSpace=document.createElement('div');
+			chatValueSpace.classList.add('chatValueSpace'+myself);
+			
+			var chatValue=document.createElement('div');
+			chatValue.classList.add('chatValue'+myself);
+			
+			var chatValueText=document.createElement('div');
+			chatValueText.classList.add('chatValueText');
+			chatValueText.innerHTML=value;
+			
+			child.window.element.appendChild(chatInner);
+			
+			chatInner.appendChild(chatUnit);
+			chatUnit.appendChild(chatAvatar);
+			chatUnit.appendChild(chatName);
+			chatUnit.appendChild(chatValueSpace);
+			
+			chatAvatar.appendChild(chatAvatarImg);
+			chatName.appendChild(chatNameText);
+			chatValueSpace.appendChild(chatValue);
+			chatValue.appendChild(chatValueText);
+			
+			chatHistory.push( (t=document.getElementsByClassName("chatInner"))[t.length-1]);
+		}
+		
+		// 获取浏览器尺寸
+		function readSizeHTML(){
+			htmlWidth = document.documentElement.clientWidth;
+			htmlHeight = document.documentElement.clientHeight;
+			
+			// 判断是否隐藏侧边菜单
+			isFull=(htmlWidth<fullWidth? true:false);
+			
+			// 主菜单占比
+			mainPer=(isFull? 1:mainWidthPer/100) ;
+			sidePer=(isFull? 0:(1-mainPer)/2 );
+		}
+		
+		// 重绘valueSpace尺寸 （旧）
+		function redrawValueSpace(name){
+			for (i=0;i<name.length;i++){
+				if (name[i])
+					name[i].style.width=htmlWidth*mainPer-80 + "px";
+			}
+		}
+		
+		// 批量重绘控件数组宽度
+		function redrawWidth(argv, args){
+			let i=0;
+			for (i;i<argv.length;i++){
+				argv[i].style.width=args;
+			}
+		}
+		
+		// 批量隐藏/显示控件数组
+		function redrawDisplay(argv, args){
+			let i=0;
+			for (i;i<argv.length;i++){
+				argv[i].style.display=args;
+			}
+		}
+		
+		// 批量改变控件数组marginLeft
+		function redrawMargin(argv, args){
+			let i=0;
+			for (i;i<argv.length;i++){
+				argv[i].style.marginLeft=args;
+			}
+		}
+		
+		// 重绘group、info、chat、input尺寸
+		function redrawMenu(){
+			
+			if (isFull){
+				display="none";
+				margin=0;
+			}
+			
+			else {
+				display="block";
+				margin=(100-mainWidthPer)/2+"%";
+			}
+			
+			child.group.element.style.display=display;
+			child.group.element.style.width=child.group.widthPer*100+"%";
+				
+			child.info.element.style.display=display;
+			child.info.element.style.width=child.info.widthPer*100+"%";
+
+			child.chat.element.style.width=htmlWidth*mainPer+"px";
+			child.chat.element.style.marginLeft=margin;
+			
+			child.input.element.style.width=htmlWidth*mainPer+"px";
+			child.input.element.style.left=margin;
+			
+			
+			margin=(isInputShow? inputHeightShow:inputHeightHidden);
+			
+			// 调整所有chatHistory的marginBottom
+			for(i=0;i<(t=chatHistory).length;i++){
+					t[i].style.marginBottom=0;
+			if(t.length>0)
+				t[t.length-1].style.marginBottom=margin+20+"px";
+			}
+			
+			// 调整inputValueText及按钮
+			child.input.element.style.height=margin+"px";
+			
+			document.getElementsByClassName("inputForm")[0].style.height=margin+"px";
+			
+			(t=document.getElementsByClassName("inputShowValue")[0]).style.height=margin+"px";
+			t.value=(isInputShow? "Hide":"Show");
+			
+			document.getElementsByClassName("inputSubmit")[0].style.height=margin+"px";
+			
+			document.getElementsByClassName("inputValueText")[0].style.height=margin+"px";
+			
+			let userListNicknameDisplay="block";
+			let userListAvatarMarginLeft=0;
+			
+			// 调整userListNickname显示状态
+			if (htmlWidth*sidePer<150){
+				userListNicknameDisplay="none";
+				userListAvatarMarginLeft=(htmlWidth*sidePer-40-50)/2;
+			}
+			
+			redrawDisplay( document.getElementsByClassName("userListNickname"), userListNicknameDisplay );
+			
+			// userListNickname隐藏时，userListAvatar居中
+			redrawMargin( document.getElementsByClassName("userListAvatar"), userListAvatarMarginLeft+"px" );
+			
+			// 调整naviLogo显示状态
+			document.getElementsByClassName("naviLogo")[0].style.display=( isFull? "none":"block" );
+			
+		}
+		
+		// 引导重绘控件
+		function redrawHTML(){
+			
+			//刷新浏览器尺寸
+			readSizeHTML();
+			
+			child.update();
+
+			// 更新navi栏用户头像（由默认更改至本地用户头像）
+			updateNaviAvatar();
+
+			// 更新在线列表
+			showOnlineUsers(userOnlineList);
+
+			// 重绘value尺寸
+			redrawWidth( document.getElementsByClassName("chatValueSpace"), htmlWidth*mainPer-80 + "px");
+			redrawWidth( document.getElementsByClassName("chatValueSpaceSelf"), htmlWidth*mainPer-80 + "px");
+			
+			// 重绘侧边菜单尺寸
+			redrawWidth( document.getElementsByClassName("userListInner"), htmlWidth*sidePer+"px" );
+			redrawWidth( document.getElementsByClassName("userListNicknameText"), htmlWidth*sidePer-105+"px" );
+			
+			// 重绘group、info、chat、input尺寸
+			redrawMenu();
+			
+			// 重绘时间戳位置
+			redrawTimeValue();
+
+
+			// 滚动至最后一个聊天控件位置
+			toEnd();
+		}
+		
+		// 输入框更改后触发发送消息、自动填充等判断
+		function chatPost(event, isKeyDown, str="", isSent=false){
+			
+			event=event||window.Event;
+			
+			value=document.getElementsByClassName("inputValueText")[0];
+			
+			// 提示文本框
+			valueHelp=document.getElementsByClassName("inputValueTextHelp")[0];
+			
+			// 默认禁用自动填充
+			let inputHelpFill=false;
+			
+			let inputHelpInfo="";
+			
+			// 截取命令部分：去除前缀及左端空格
+			let args=value.value.slice(commandPrefix.length).replace(/(^\s*)/g, "");
+
+			let argv=args.split(" ");
+			
+			// 已读取argv的个数
+			let argvRead=0;
+			
+			let argvPointer=0;
+			
+			// 按键落下/抬起 仅计算一遍
+
+			
+			// 触发提示文本
+			if (value.value.slice(0,commandPrefix.length)==commandPrefix){
+
+				valueHelp.value="$->";
+				
+				
+				
+				let result=[];
+				
+				result=keywordSearch(argv, commandKeyword);
+				inputHelpInfo+=result;
+				inputHelpFill=( (t=inputHelpInfo.split(" "))[argv.length-1][0]=="["? false:true );
+				
+				valueHelp.value+=inputHelpInfo;
+				
+			}
+			
+			else {
+				valueHelp.value="";
+			}
+			
+			// 自动填充函数
+			if (isKeyDown==true){
+				// 当按下 ↑ 或 ↓ 则读取上/下一条历史输入
+				if (event.keyCode==38){
+					event.preventDefault();
+
+					value.value=( (t=inputHistory[ inputHistory.length-(inputHistoryRead=(++inputHistoryRead<=inputHistory.length? inputHistoryRead:inputHistory.length) ) ])==undefined? "":t );
+
+					return;
+				}
+
+				if (event.keyCode==40){
+					event.preventDefault();
+
+					value.value=( (inputHistoryRead=(--inputHistoryRead<0? 0:inputHistoryRead)) >= 1 ? inputHistory[ inputHistory.length - inputHistoryRead]:"");
+
+					return;
+				}
+
+				// tab自动填充提示文本内容
+				if (event.keyCode==9){
+					event.preventDefault();
+
+					if (inputHelpFill){
+						let inputHelpInfoOutput = valueHelp.value.split(" ").slice(0,argv.length);
+						value.value="";
+						
+						for(i=0;i<inputHelpInfoOutput.length;i++){
+							value.value+=inputHelpInfoOutput[i];
+							
+							if (i<inputHelpInfoOutput.length-1)
+								value.value+=" ";
+						}
+					}
+				}
+			}
+			
+			// 当按下回车，或输入为空时返回。
+			if (value.value == "undefined")
+				return;
+
+			if (str!==""){
+				showChatUnit("ノワール", str, "noir.jpg", true);
+				redrawHTML();
+				
+				return;
+			}
+
+
+			// 输入回车或按下Sent
+			if (event.keyCode==13 || isSent){
+				
+				
+				let value=document.getElementsByClassName("inputValueText")[0];
+				let valueText=value.value;
+				
+				event.preventDefault();
+				
+				// 输入值为空或换行符时返回
+				if ( !valueText || valueText == "\n" ){
+					value.value="";
+					return;
+				}
+				
+				inputHistory.push(valueText);
+				inputHistoryRead=0;
+				
+				// 查询是否包含违禁命令
+				for (i=0;i<inputBannedLabel.length;i++){
+					if (valueText.indexOf("<"+inputBannedLabel[i])!=-1 || valueText.indexOf(inputBannedLabel[i]+">")!=-1 || valueText.indexOf("</"+inputBannedLabel[i]+">")!=-1 ){
+						showChatUnit("風又音理", "<div class='chatValueTextWarning'>你没有使用此命令的权限。</div>", "default.jpg");
+						value.value="";
+						
+						redrawHTML();
+						return;
+					}
+				}
+
+
+				// 生成对话单元
+				if ( (valueCommand = valueText ).slice(0,commandPrefix.length) != commandPrefix){
+					// 获取当前unix时间戳
+					let time=Math.round(new Date().getTime());
+
+					// 若与上一条消息时间间隔大于聊天时间间隔（chatTimeInterval），则打印一条当前时间的时间戳
+					if(chatTimeLast==0 || time-chatTimeLast>chatTimeInterval)
+						showTimeUnit(commandPrefix + "now");
+
+					// 设置上一条（当前）消息发送时间
+					chatTimeLast=time;
+
+					// userLocalInfo="username nickname avatar"
+					let userInfo=userLocalInfo.split(" ");
+					let nickname=userInfo[1];
+					let avatar=userInfo[2];
+
+					showChatUnit(nickname, value.value, avatar, true);
+					
+					// 不为调试模式时，向服务器发送对话信息
+					if (!debugLocal)
+						sendChatToServer(me,value.value);
+					
+
+					value.value="";
+					redrawHTML();
+				}
+
+				// 调用控制台
+				else{
+
+					
+					let argv=valueCommand.slice(3).split(" ");
+					let command=argv[0];
+					let isHelp=(argv[1]=="/?"? true:false);
+
+					let err=false;
+
+					// 清屏
+					if(  command=="cls" ) {
+
+						//!$:cls
+
+						if(isHelp)
+							showChatUnit("風又音理", commandPrefix+"cls", "default.jpg");
+
+						else{
+							commandCls();
+						}
+					}
+
+					// 生成时间戳
+					else if ( command=="timestamp" ) {
+
+						//!$:timestamp [type="now"]
+
+						if (isHelp)
+							showChatUnit("風又音理", commandPrefix+"timestamp", "default.jpg");
+
+						let args=(argv[1]? argv[1] : "now")+(argv[2]? " "+argv[2] : "");
+						
+						showTimeUnit(commandPrefix+args);
+					}
+
+					// 生成对话单元
+					else if ( command=="speak" ) {
+
+						//!$:speak ノワール ...suki noir.jpg
+
+						if(isHelp){
+							showChatUnit("風又音理", commandPrefix+"speak [username] [value] [avatar] [*from]", "default.jpg");
+
+							showChatUnit("風又音理", "[nickname]用户昵称，如 “風又音理”。<br>[value]发言内容，如 “......探して。”。<br>[avatar]用户头像(带后缀名)，如 “default.jpg”。<br>[*from]是否来自己方发送，“true”或“false(默认为false)。", "default.jpg");
+						}
+
+						else {
+
+							if (argv.length==4){
+								showChatUnit(argv[1], argv[2], argv[3]);
+							}
+							else if (argv.length==5){
+								showChatUnit(argv[1], argv[2], argv[3], (argv[4]=="true"? true:false) );
+							}
+							else
+								err=true;
+						}
+					}
+
+					// 显示帮助信息
+					else if ( command=="help" ) {
+
+						//!$:help
+
+						if(isHelp)
+							showChatUnit("風又音理", commandPrefix+"help", "default.jpg");
+
+						else
+							commandHelp();
+
+					}
+
+					// 无此命令
+					else{
+						err=true;
+					}
+
+					if (err)
+						showChatUnit("風又音理", "命令语法不正确，请检查拼写。", "default.jpg");
+					
+					valueCommand+=commandSuffix;
+
+					value.value="";
+					redrawHTML();
+
+					return;
+				}
+			}
+		}
+		
+		// 展开/收起输入框
+		function inputShowValue(){
+			isInputShow=(isInputShow? false:true);
+			
+			redrawMenu();
+			toEnd();
+		}
+		
+		// 若输出字符串长度为1则向前填充0至两位
+		function toTwoBits(str){
+			return (str.length==1? "0"+str : str);
+		}
+		
+		// 搜索关键字 args=输入的部分关键字 argv=前往搜索的数组
+		function keywordSearch(args, argv){
+			
+			if (argv==undefined )
+				return undefined;
+			
+			let result="";
+			
+			let t=[];
+			
+
+			let i=0;
+			for(i=0;i<argv.length;i++){
+				let keyword=argv[i][0];
+
+				if ( (keyword.length>1) && (keyword.indexOf(args[0])==0 || (keyword.indexOf("[")==0 && args[0]==undefined) ) ){
+					result=keyword+" ";
+					
+					
+					if(argv[i][1]!=undefined){
+						t=keywordSearch(args.slice(1), argv[i]);
+
+						if (t!=undefined && t!=[]){
+							result+=t+" ";
+						}
+					}
+					
+					if (keyword.indexOf(args[0])==0)
+						// 删去结尾多余空格
+						result=result.slice(0,-1);
+				}
+
+			}
+			
+			return result;
+		}
+
+		// 更新navi栏用户头像
+		function updateNaviAvatar(){
+			// userLocalInfo="username nickname avatar"
+			let avatar=userLocalInfo.split(" ")[2];
+			document.getElementsByClassName("naviUserAvatarImg")[0].setAttribute("src", avatar);
+		}
+		
+		
+		// <!-------------------------------------在线列表函数声明------------------------------------->
+		
+		// 生成在线用户单元 args=username
+		function showUserListUnit(args){
+			let userResult=user.search(args);
+		
+			let userListInner=document.createElement('div');
+			userListInner.classList.add("userListInner");
+			
+			let userListUnit=document.createElement('div');
+			userListUnit.classList.add("userListUnit");
+			
+			let userListAvatar=document.createElement('div');
+			userListAvatar.classList.add("userListAvatar");
+			
+			let userListAvatarImg=document.createElement('img');
+			userListAvatarImg.classList.add("userListAvatarImg");
+			if (userResult.avatar.indexOf("data:image/")==0)
+				userListAvatarImg.setAttribute("src", userResult.avatar);
+			else
+				userListAvatarImg.setAttribute("src", "source/images/avatars/"+userResult.avatar);
+			
+			let userListNickname=document.createElement('div');
+			userListNickname.classList.add("userListNickname");
+			
+			let userListNicknameText=document.createElement('div');
+			userListNicknameText.classList.add("userListNicknameText");
+			userListNicknameText.innerHTML=userResult.nickname;
+			
+			userListInner.appendChild(userListUnit);
+			userListUnit.appendChild(userListAvatar);
+			userListAvatar.appendChild(userListAvatarImg);
+			userListUnit.appendChild(userListNickname);
+			userListNickname.appendChild(userListNicknameText);
+			
+			document.getElementsByClassName("userListWindow")[0].appendChild(userListInner);
+			
+		}
+		
+		// 显示argv数组(默认为在线列表)内的所有用户至在线列表 
+		function showOnlineUsers(argv=userOnlineList){
+			let i=0;
+
+			// 清空在线列表单元
+			let parent=document.getElementsByClassName("userListWindow")[0];
+			let child=document.getElementsByClassName("userListInner");
+			for (i=child.length-1;i>=0;i--)
+				parent.removeChild(child[i]);
+
+			// 按argv生成在线列表单元
+			for (i=0;i<argv.length;i++)
+				showUserListUnit(argv[i]);
+		}
+		
+		class serverFunctions {
+
+			// 向服务器请求username=args的用户信息
+			getUserInfo(args) {
+				let xmlhttp;
+				xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						let result = JSON.parse(this.responseText);
+						// append="username, nickname, avatar"
+						let append=args+" "+args+" "+result[0].picture;
+						user.add(append);
+					}
+				}
+				xmlhttp.open("GET", url + "/get/getusers?username="+args , false);
+				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				xmlhttp.send();
+			}
+
+			// 向服务器请求argc条历史记录
+			getLogs(argc=20) {
+				let xmlhttp;
+				xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						let result = JSON.parse(this.responseText);
+						chatLogs = result;
+					}
+				}
+				xmlhttp.open("GET", url + "/chat/getchat?n="+argc , false);
+				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				xmlhttp.send();
+			}
+
+			// 向服务器请求在线列表
+			getOnline(argc=20) {
+				let xmlhttp;
+				xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						let result = JSON.parse(this.responseText);
+
+						// 清空在线列表并赋值为服务器返回的更新列表
+						userOnlineList=[];
+						for(let i=0;i<result.length;i++)
+							userOnlineList.push(result[i].username);
+					}
+				}
+				xmlhttp.open("GET", url + "/get/getOnline?" , false);
+				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				xmlhttp.send();
+			}
+		}
+
+		// 显示对话记录中所有对话
+		function showChatLogs(argv){
+			// 清屏
+			commandCls();
+
+			for (let i=0;i<argv.length;i++){
+
+				timeValue=document.getElementsByClassName("timeValue");
+
+				let username=argv[i].name;
+				let value=argv[i].value;
+				let time=argv[i].time;
+
+				let isSelf=false;
+
+				if (username=="[self]" || username==usernameLocal){
+					username=userLocalInfo.split(" ")[0];
+					isSelf=true;
+				}
+
+				// 若距上一条消息间隔超过chatTimeInterval秒(聊天时间间隔)，则打印时间戳
+				if (chatTimeLast==0 || Math.abs(time-chatTimeLast)>chatTimeInterval || timeValue==undefined) {
+					let date = new Date(time);
+					showTimeUnit(date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes());
+					chatTimeLast=time;
+				}
+
+				// showChatUnit(user.%username%.nickname, value, user.%username%.avatar， %isSelf%);
+				eval( "showChatUnit(user." + username + ".nickname, '" + value + "', user." + username + ".avatar, " + isSelf +");" );
+
+			}
+
+			timeValue=document.getElementsByClassName("timeValue");
+
+			redrawHTML();
+		}
+
+		function executeHTML(){
+			// 向服务器发送在线信息
+			onlineReset();
+
+
+			// 获取在线列表与聊天记录
+			server.getOnline();
+			server.getLogs();
+
+			// 将本地缺少的用户信息存入userRequireList
+			for(let i=0;i<userOnlineList.length;i++)
+				if ( eval("user."+userOnlineList[i].name)==undefined )
+					userRequireList.push(userOnlineList[i]);
+
+			for(let i=0;i<chatLogs.length;i++)
+				if ( eval("user."+chatLogs[i].name)==undefined )
+					userRequireList.push(chatLogs[i].name);
+
+			// 向服务器请求所需的（userRequireList）用户信息
+			// 当需求列表（的首项）存在
+			while(userRequireList[0]!=undefined) {
+				// 向服务器请求需求列表顶层用户
+				server.getUserInfo(userRequireList[0]);
+
+				// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
+				userRequireList.splice(0, 1);
+			}
+
+			showChatLogs(chatLogs);
+			redrawHTML();
+		}
+		
+	</script>
+	
+	<style type="text/css">
+		textarea, input{
+			border: none;
+			box-shadow:none;
+			outline: none;
+		}
+	</style>
+	
+	
+	<div class="input">
+		<div class="inputWindow">
+			<form class="inputForm">
+				<textarea rows="1" cols="60" onKeyDown="chatPost(event, true)" onKeyUp="chatPost(event, false)" class="inputValueText"></textarea>
+				<input type="button" class="inputShowValue" value="Show" onClick="inputShowValue()">
+
+				<input type="button" class="inputSubmit" value="Sent" onClick="chatPost(event,0,'',true)">
+
+				<textarea rows="1" cols="60" class="inputValueTextHelp" readonly></textarea>
+			</form>
+		</div>
+	</div>
+	
+	<div class="navi">
+		<div class="naviWindow">
+			<form action="/logout" class="naviLogout">
+				<input type="submit" class="naviLogoutText" value="Log out">
+			</form>
+			<div class="naviLogo">
+				WebChat
+			</div>
+			<div class="naviUserAvatar">
+				<img class="naviUserAvatarImg" src="source/images/avatars/noir.jpg">
+			</div>
+		</div>
+	</div>
+	
+	<div class="group">
+		<div class="groupWindow">
+			<div class="userListWindow">
+			</div>
+		</div>
+	</div>
+	
+	<div class="chat">
+		<div class="chatWindow" id="window">
+		</div>
+	</div>
+	
+	<div class="info">
+		<div class="infoWindow">
+		</div>
+	</div>
+	
+	<script>
+
+		usernameLocal=document.cookie;
+
+		// 读取浏览器尺寸
+		readSizeHTML();
+
+		// 读取控件信息
+		child=new childFunctions();
+		child.update();
+
+		// 载入用户信息
+		user=new userList();
+		user.load(userInfoList);
+
+		// 生成服务器函数类
+		server=new serverFunctions();
+
+		// 更新登录状态
+		onlineReset();
+		userOnlineList=[];
+		server.getOnline();
+
+		// 获取聊天记录
+		server.getLogs();
+
+		for(let i=0;i<userOnlineList.length;i++)
+			if ( eval("user."+userOnlineList[i].name)==undefined )
+				userRequireList.push(userOnlineList[i]);
+
+
+		for(let i=0;i<chatLogs.length;i++)
+			if ( eval("user."+chatLogs[i].name)==undefined )
+				userRequireList.push(chatLogs[i].name);
+
+
+		// 向服务器请求所需的用户信息
+		// 当需求列表（的首项）存在
+		while(userRequireList[0]!=undefined) {
+			// 向服务器请求需求列表顶层用户
+			server.getUserInfo(userRequireList[0]);
+
+			// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
+			userRequireList.splice(0, 1);
+		}
+
+
+		userLocalInfo=usernameLocal+" "+usernameLocal+" "+ eval("user."+usernameLocal+".avatar");
+
+		// --------------------------在线列表菜单信息-----------------------------
+		
+		// 显示在线列表中的所有用户
+		showOnlineUsers(userOnlineList);
+		
+		// --------------------------显示对话菜单信息-----------------------------
+
+		// 默认打印首个时间戳（旧）
+		// showTimeUnit("08:31");
+
+		// 显示默认对话列表中的所有信息
+		showChatLogs(chatLogs);
+
+		// showTimeUnit(commandPrefix+"now");
+		
+		
+		// 更新控件信息
+		timeValue=document.getElementsByClassName("timeValue");
+		
+		// 重绘控件尺寸
+		redrawHTML();
+
+		// 监听浏览器尺寸变化
+		window.addEventListener("resize", redrawHTML);
+		
+		document.getElementsByClassName("inputValueText")[0].focus();
+
+		setInterval(executeHTML, 1*1000);
+
+
+	</script>
+</body>
+</html>

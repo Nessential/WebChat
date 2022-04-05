@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/mvc
+   https://www.springframework.org/schema/mvc/spring-mvc.xsd
+ http://www.springframework.org/schema/task
+ http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <!-- 配置SpringMVC -->
+    <!-- 1.开启SpringMVC注解驱动 -->
+    <mvc:annotation-driven />
+    <!-- 2.静态资源默认servlet配置-->
+    <mvc:default-servlet-handler/>
+
+    <!-- 3.配置jsp 显示ViewResolver视图解析器 -->
+<!--    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+<!--        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />-->
+<!--        <property name="prefix" value="/WEB-INF/jsp/" />-->
+<!--        <property name="suffix" value=".jsp" />-->
+<!--    </bean>-->
+
+    <!-- 4.扫描web相关的bean -->
+    <context:component-scan base-package="com.controller" />
+<!--    防止JSON字符串乱码-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+                        <property name="failOnEmptyBeans" value="false"/>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- 引入静态资源 -->
+    <mvc:default-servlet-handler />
+    <mvc:resources mapping="/styles/**" location="/WEB-INF/mainChat/styles/" />
+    <mvc:resources mapping="/source/**" location="/WEB-INF/mainChat/source/" />
+    <mvc:resources mapping="/js/**" location="/WEB-INF/mainChat/js/" />
+    <mvc:resources mapping="/static/**" location="/WEB-INF/mainChat/static/" />
+    <mvc:resources mapping="/fonts/**" location="/WEB-INF/mainChat/styles/fonts/" />
+    
+    
+<!--    配置拦截器-->
+<!--   <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+          <mvc:exclude-mapping path="/WEB-INF/mainChat/login.html" />
+          <mvc:exclude-mapping path="/login/*" />
+          <mvc:exclude-mapping path="/register/*" />
+           <mvc:exclude-mapping path="/register.html" />
+            <bean class="com.interceptor.MyInterceptor"/>
+        </mvc:interceptor>
+
+    </mvc:interceptors>-->
+
+</beans>
