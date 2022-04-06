@@ -6,7 +6,7 @@
 
     <select id="getChat" resultType="Chat" >
         select * from chat
-        order by time
+        order by time DESC
         limit 0,#{n}
     </select>
 
