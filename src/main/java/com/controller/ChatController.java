@@ -28,12 +28,16 @@ public class ChatController {
         return "你妈的";
     }
 
-
+public void dd(){
+    System.out.println("更新");
+}
     @RequestMapping("/getchat")
     public String getChat(int n){
         System.out.println(n);
         return JSON.toJSONString(chatService.getChat(n));
     }
+
+
     @RequestMapping("/getChatByTime")
     public String getChatByTime(long timestamp){
         return JSON.toJSONString(chatService.getChatByTime(timestamp));
