@@ -18,4 +18,8 @@ public class PageController {
     public String login(Model model){
         return "/WEB-INF/mainChat/login.html";
     }
+    @RequestMapping("/")
+    public String indexPage() throws Exception {
+        return "redirect:/login";
+    }
 }

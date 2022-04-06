@@ -8,7 +8,7 @@
 }
 html{
 	background-color: #FFCCCC;
-	font-family: '华文细黑';
+	font-family: '华文细黑', SAOUIRegular;
 	width: 100%;
 	height: 100%;
 	overflow-y: hidden;
