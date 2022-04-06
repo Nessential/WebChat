@@ -168,6 +168,10 @@
 				else
 					console.log("Error at userList()")
 			}
+
+			reset(args){
+				eval ( "this." + args.split(' ')[0] + ".reset('" + args + "'); ");
+			}
 			
 			del(args){
 				
@@ -187,18 +191,24 @@
 		}
 		
 		class userInfo{
-			constructor(args="Neri 風又音理 default.jpg"){
+			constructor(args){
+				if (!args)
+					console.log("Error at constructor() at userInfo: args is not defined.")
 				let argv=args.split(" ");
 				
-				if (argv.length==3){	
-					this.username=argv[0];
-					this.nickname=argv[1];
-					this.avatar=argv[2];
+				if (argv.length<3){
+						argv[1]=argv[0];
+						argv[2]=defaultAvatar;
 				}
-				else{
-					console.log("Error at userInfo(): argv.length != 3.");
-					return -1;
-				}
+				this.username=argv[0];
+				this.nickname=argv[1];
+				this.avatar=argv[2];
+			}
+			reset(args){
+				let argv=args.split(" ");
+				this.username=argv[0];
+				this.nickname=argv[1];
+				this.avatar=argv[2];
 			}
 		}
 		
@@ -546,6 +556,7 @@
 			child.info.element.style.width=child.info.widthPer*100+"%";
 
 			child.chat.element.style.width=htmlWidth*mainPer+"px";
+			child.chat.element.style.height=htmlHeight-70-32+"px";
 			child.chat.element.style.marginLeft=margin;
 			
 			child.input.element.style.width=htmlWidth*mainPer+"px";
@@ -622,7 +633,7 @@
 
 
 			// 滚动至最后一个聊天控件位置
-			toEnd();
+			// toEnd();
 		}
 		
 		// 输入框更改后触发发送消息、自动填充等判断
@@ -995,10 +1006,11 @@
 						let result = JSON.parse(this.responseText);
 						// append="username, nickname, avatar"
 						let append=args+" "+args+" "+result[0].picture;
-						user.add(append);
+						user.reset(append);
+						userRequireList.splice(userRequireList.indexOf(args)-1, 1);
 					}
 				}
-				xmlhttp.open("GET", url + "/get/getusers?username="+args , false);
+				xmlhttp.open("GET", url + "/get/getusers?username="+args , true);
 				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 				xmlhttp.send();
 			}
@@ -1086,24 +1098,29 @@
 
 			// 将本地缺少的用户信息存入userRequireList
 			for(let i=0;i<userOnlineList.length;i++)
-				if ( eval("user."+userOnlineList[i].name)==undefined )
+				if ( eval("user."+userOnlineList[i])==undefined && userRequireList.indexOf(userOnlineList[i])==-1 )
 					userRequireList.push(userOnlineList[i]);
 
 			for(let i=0;i<chatLogs.length;i++)
-				if ( eval("user."+chatLogs[i].name)==undefined )
+				if ( eval("user."+chatLogs[i].name)==undefined && userRequireList.indexOf(chatLogs[i].name)==-1 )
 					userRequireList.push(chatLogs[i].name);
+
+			for(let i=0;i<userRequireList.length;i++) {
+				user.add(userRequireList[i]);
+			}
 
 			// 向服务器请求所需的（userRequireList）用户信息
 			// 当需求列表（的首项）存在
-			while(userRequireList[0]!=undefined) {
+			for(let i=0; i<userRequireList.length; i++) {
 				// 向服务器请求需求列表顶层用户
-				server.getUserInfo(userRequireList[0]);
+				server.getUserInfo(userRequireList[i]);
 
 				// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
-				userRequireList.splice(0, 1);
+				// userRequireList.splice(0, 1);
 			}
 
 			showChatLogs(chatLogs);
+			showOnlineUsers();
 			redrawHTML();
 		}
 		
@@ -1175,7 +1192,6 @@
 
 		// 载入用户信息
 		user=new userList();
-		user.load(userInfoList);
 
 		// 生成服务器函数类
 		server=new serverFunctions();
@@ -1189,23 +1205,26 @@
 		server.getLogs();
 
 		for(let i=0;i<userOnlineList.length;i++)
-			if ( eval("user."+userOnlineList[i].name)==undefined )
+			if ( eval("user."+userOnlineList[i])==undefined && userRequireList.indexOf(userOnlineList[i])==-1 )
 				userRequireList.push(userOnlineList[i]);
 
 
 		for(let i=0;i<chatLogs.length;i++)
-			if ( eval("user."+chatLogs[i].name)==undefined )
+			if ( eval("user."+chatLogs[i].name)==undefined && userRequireList.indexOf(chatLogs[i].name)==-1 )
 				userRequireList.push(chatLogs[i].name);
 
 
+		for(let i=0;i<userRequireList.length;i++)
+			user.add(userRequireList[i]);
+
 		// 向服务器请求所需的用户信息
 		// 当需求列表（的首项）存在
-		while(userRequireList[0]!=undefined) {
+		for (let i=0; i<userRequireList.length; i++) {
 			// 向服务器请求需求列表顶层用户
-			server.getUserInfo(userRequireList[0]);
+			server.getUserInfo(userRequireList[i]);
 
 			// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
-			userRequireList.splice(0, 1);
+			// userRequireList.splice(0, 1);
 		}
 
 
@@ -1232,6 +1251,7 @@
 		
 		// 重绘控件尺寸
 		redrawHTML();
+		toEnd();
 
 		// 监听浏览器尺寸变化
 		window.addEventListener("resize", redrawHTML);
