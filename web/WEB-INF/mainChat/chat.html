@@ -936,7 +936,7 @@
 		// 更新navi栏用户头像
 		function updateNaviAvatar(){
 			// userLocalInfo="username nickname avatar"
-			let avatar=userLocalInfo.split(" ")[2];
+			let avatar=eval("user."+usernameLocal+".avatar");
 			document.getElementsByClassName("naviUserAvatarImg")[0].setAttribute("src", avatar);
 		}
 		
@@ -1119,8 +1119,12 @@
 				// userRequireList.splice(0, 1);
 			}
 
+			// 更新navi栏头像
+			updateNaviAvatar()
+
 			showChatLogs(chatLogs);
 			showOnlineUsers();
+
 			redrawHTML();
 		}
 		
@@ -1248,7 +1252,10 @@
 		
 		// 更新控件信息
 		timeValue=document.getElementsByClassName("timeValue");
-		
+
+		// 更新navi栏头像
+		updateNaviAvatar()
+
 		// 重绘控件尺寸
 		redrawHTML();
 		toEnd();
