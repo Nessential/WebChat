@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="war" build-on-make="true" name="WebChat:war">
-    <output-path>$PROJECT_DIR$/out/artifacts/WebChat_war</output-path>
+    <output-path>$USER_HOME$/Desktop</output-path>
     <root id="archive" name="WebChat_war.war">
       <element id="artifact" artifact-name="WebChat:war exploded" />
     </root>

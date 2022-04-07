@@ -5,11 +5,11 @@
 <mapper namespace="com.mapper.ChatMapper">
 
     <select id="getChat" resultType="Chat" >
-        select * from chat
-        order by time DESC
-        limit 0,#{n}
+        select * from (
+          select * From chat order by time DESC LIMIT ${n}
+              )sub
+        order by time ASC
     </select>
-
     <select id="getChatByTime" resultType="Chat">
         select * from chat
         where time>#{timestamp}
