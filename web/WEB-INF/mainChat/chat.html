@@ -42,7 +42,8 @@
 		const inputBannedLabel=["form", "input", "textarea", "menus", "fieldset"];
 		
 		// 默认己方信息 用户名 昵称 头像
-		userLocalInfo="Noir ノワール noir.jpg";
+		// userLocalInfo="Noir ノワール noir.jpg";
+		userLocalInfo="";
 		
 		// 默认显示语句
 		const chatDefault=[
@@ -105,14 +106,7 @@
 		// 		"BrotherB BrotherB b.jpg",
 		// 		"Yume YukinaSor4 yume.jpg"
 		
-		userOnlineList=[
-			"Noir",
-			"Neri",
-			"Halfrain",
-			"dd",
-			"BrotherB",
-			"Yume"
-		]
+		userOnlineList=[];
 
 		userRequireList=new Array();
 
@@ -631,6 +625,8 @@
 			// 重绘时间戳位置
 			redrawTimeValue();
 
+			// 重绘动画位置
+			AnimationLoad();
 
 			// 滚动至最后一个聊天控件位置
 			// toEnd();
@@ -936,8 +932,9 @@
 		// 更新navi栏用户头像
 		function updateNaviAvatar(){
 			// userLocalInfo="username nickname avatar"
-			let avatar=eval("user."+usernameLocal+".avatar");
-			document.getElementsByClassName("naviUserAvatarImg")[0].setAttribute("src", avatar);
+			let userLocal;
+			if ( (userLocal=user.search(usernameLocal))!=undefined )
+				document.getElementsByClassName("naviUserAvatarImg")[0].setAttribute("src", userLocal.avatar);
 		}
 		
 		
@@ -1025,7 +1022,7 @@
 						chatLogs = result;
 					}
 				}
-				xmlhttp.open("GET", url + "/chat/getchat?n="+argc , false);
+				xmlhttp.open("GET", url + "/chat/getchat?n="+argc , true);
 				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 				xmlhttp.send();
 			}
@@ -1044,7 +1041,7 @@
 							userOnlineList.push(result[i].username);
 					}
 				}
-				xmlhttp.open("GET", url + "/get/getOnline?" , false);
+				xmlhttp.open("GET", url + "/get/getOnline?" , true);
 				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 				xmlhttp.send();
 			}
@@ -1119,6 +1116,13 @@
 				// userRequireList.splice(0, 1);
 			}
 
+			// 更新本地用户信息
+			if (!userLocalInfo && user.search(usernameLocal)!=undefined) {
+				userLocalInfo = usernameLocal + " " + usernameLocal + " " + eval("user." + usernameLocal + ".avatar");
+				// 聚焦到页面底部
+				toEnd();
+			}
+
 			// 更新navi栏头像
 			updateNaviAvatar()
 
@@ -1126,6 +1130,32 @@
 			showOnlineUsers();
 
 			redrawHTML();
+		}
+
+		function AnimationLoad(){
+			let loading=document.getElementsByClassName("loading")[0];
+			let loadingBorder=document.getElementsByClassName("loadingBorder")[0];
+			let loadingBackground=document.getElementsByClassName("loadingBackground")[0];
+
+			loading.style.top=(htmlHeight-40)/2+"px";
+			loading.style.left=htmlWidth*0.2+"px";
+
+			loadingBorder.style.top=(htmlHeight-40)/2+"px";
+			loadingBorder.style.left=htmlWidth*0.2+"px";
+			loadingBorder.style.width=htmlWidth*0.6+"px";
+
+			loadingBackground.style.height=htmlHeight+"px";
+			loadingBackground.style.width=htmlWidth+"px";
+		}
+
+		function AnimationLoaded(){
+			let loadingBackground=document.getElementsByClassName("loadingBackground")[0];
+			let loading=document.getElementsByClassName("loading")[0];
+
+			loading.style.display="none";
+			loadingBackground.style.display="none";
+
+			toEnd();
 		}
 		
 	</script>
@@ -1137,8 +1167,12 @@
 			outline: none;
 		}
 	</style>
-	
-	
+
+	<div class="loadingBackground">
+		<div class="loadingBorder"></div>
+		<div class="loading"></div>
+	</div>
+
 	<div class="input">
 		<div class="inputWindow">
 			<form class="inputForm">
@@ -1190,6 +1224,7 @@
 		// 读取浏览器尺寸
 		readSizeHTML();
 
+
 		// 读取控件信息
 		child=new childFunctions();
 		child.update();
@@ -1200,68 +1235,19 @@
 		// 生成服务器函数类
 		server=new serverFunctions();
 
-		// 更新登录状态
-		onlineReset();
-		userOnlineList=[];
-		server.getOnline();
+		// 加载动画
+		AnimationLoad();
 
-		// 获取聊天记录
-		server.getLogs();
+		// 执行页面元素渲染操作
+		executeHTML();
 
-		for(let i=0;i<userOnlineList.length;i++)
-			if ( eval("user."+userOnlineList[i])==undefined && userRequireList.indexOf(userOnlineList[i])==-1 )
-				userRequireList.push(userOnlineList[i]);
-
-
-		for(let i=0;i<chatLogs.length;i++)
-			if ( eval("user."+chatLogs[i].name)==undefined && userRequireList.indexOf(chatLogs[i].name)==-1 )
-				userRequireList.push(chatLogs[i].name);
-
-
-		for(let i=0;i<userRequireList.length;i++)
-			user.add(userRequireList[i]);
-
-		// 向服务器请求所需的用户信息
-		// 当需求列表（的首项）存在
-		for (let i=0; i<userRequireList.length; i++) {
-			// 向服务器请求需求列表顶层用户
-			server.getUserInfo(userRequireList[i]);
-
-			// 请求得到用户数据后，在获取列表删除第一项，使后续项向前补充
-			// userRequireList.splice(0, 1);
-		}
-
-
-		userLocalInfo=usernameLocal+" "+usernameLocal+" "+ eval("user."+usernameLocal+".avatar");
-
-		// --------------------------在线列表菜单信息-----------------------------
-		
-		// 显示在线列表中的所有用户
-		showOnlineUsers(userOnlineList);
-		
-		// --------------------------显示对话菜单信息-----------------------------
-
-		// 默认打印首个时间戳（旧）
-		// showTimeUnit("08:31");
-
-		// 显示默认对话列表中的所有信息
-		showChatLogs(chatLogs);
-
-		// showTimeUnit(commandPrefix+"now");
-		
-		
 		// 更新控件信息
 		timeValue=document.getElementsByClassName("timeValue");
 
-		// 更新navi栏头像
-		updateNaviAvatar()
-
-		// 重绘控件尺寸
-		redrawHTML();
-		toEnd();
-
 		// 监听浏览器尺寸变化
 		window.addEventListener("resize", redrawHTML);
+
+		document.getElementsByClassName("loading")[0].addEventListener("animationend", AnimationLoaded, false);
 		
 		document.getElementsByClassName("inputValueText")[0].focus();
 

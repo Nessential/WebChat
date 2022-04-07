@@ -89,7 +89,7 @@ function onlineReset(){
     // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
     xmlhttp=new XMLHttpRequest();
   }
-  xmlhttp.open("GET",url+"get/online?username="+usernameLocal ,false);
+  xmlhttp.open("GET",url+"get/online?username="+usernameLocal ,true);
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send();
 }
