@@ -19,6 +19,43 @@ body{
 	padding: 0;
 }
 
+@keyframes loading{
+	from{
+		width: 0;
+	}
+	to{
+		width: 60%;
+	}
+}
+
+.loading{
+	float: left;
+	z-index: 31;
+	height: 40px;
+	background-color: #01AAED;
+	position: fixed;
+	display: block;
+	animation-name: loading;
+	animation-duration: 2.5s;
+}
+.loadingBorder{
+	float: left;
+	z-index: 32;
+	height: 36px;
+	position: fixed;
+	display: block;
+	border: solid 2px #01AAED;
+}
+.loadingBackground{
+	float: left;
+	z-index: 30;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+
 .navi, .group, .chat, .info, .input{
 	float: left;
 }
@@ -213,8 +250,6 @@ body{
 	overflow: hidden;
 	width: 130px;
 }
-
-.userListMotto{}
 
 .userListMottoText{
 	display: none;
